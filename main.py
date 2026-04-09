@@ -13,7 +13,7 @@ if __name__ == "__main__":
     SCREEN_WIDTH  = 1400
 
     # Positions
-    TITLE_POS = (300, 100)
+    TITLE_POS = (SCREEN_WIDTH // 2, 50)
 
     # Colors
     SCREEN_COLOR = (  0,   0,   0)  # Black
