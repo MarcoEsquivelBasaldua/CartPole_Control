@@ -10,8 +10,8 @@ if __name__ == "__main__":
     pygame.init()
 
     # Environment sizes
-    SCREEN_HEIGHT = 900
-    SCREEN_WIDTH  = 1460
+    SCREEN_HEIGHT = 1000
+    SCREEN_WIDTH  = 1620
 
     # Positions
     TITLE_POS          = (SCREEN_WIDTH // 2,  50)
@@ -56,22 +56,22 @@ if __name__ == "__main__":
         lqrTitleDisplay.draw("LQR")
         mpcTitleDisplay.draw("MPC")
 
-        pygame.draw.line(screen, (255, 255, 255), (320, 0), (320, SCREEN_HEIGHT), 2)  # Vertical line
-        pygame.draw.line(screen, (255, 255, 255), (0, 100), (SCREEN_WIDTH, 100), 2)  # Horizontal line
+        #pygame.draw.line(screen, (255, 255, 255), (320, 0), (320, SCREEN_HEIGHT), 2)  # Vertical line
+        #pygame.draw.line(screen, (255, 255, 255), (0, 100), (SCREEN_WIDTH, 100), 2)  # Horizontal line
 
         # Draw rectangles for each control method
         height = 180
-        pygame.draw.rect(screen, (255, 255, 255), (320, 100, int(height * (1 + np.sqrt(2))), height), 2)   # PID rectangle
-        pygame.draw.rect(screen, (255, 255, 255), (800, 100, int(height * (2 + np.sqrt(2))), height), 2)   # PID rectangle 2
+        pygame.draw.rect(screen, (255, 255, 255), (340, 200, int(height * (1 + np.sqrt(2))), height), 2)   # PID rectangle
+        pygame.draw.rect(screen, (255, 255, 255), (840, 200, int(height * (1 + 2*np.sqrt(2))), height), 2)   # PID rectangle 2
 
-        pygame.draw.rect(screen, (255, 255, 255), (320, 300, int(height * (1 + np.sqrt(2))), height), 2)   # State Feedback rectangle
-        pygame.draw.rect(screen, (255, 255, 255), (800, 300, int(height * (2 + np.sqrt(2))), height), 2)   # State Feedback rectangle 2
+        pygame.draw.rect(screen, (255, 255, 255), (340, 400, int(height * (1 + np.sqrt(2))), height), 2)   # State Feedback rectangle
+        pygame.draw.rect(screen, (255, 255, 255), (840, 400, int(height * (1 + 2*np.sqrt(2))), height), 2)   # State Feedback rectangle 2
 
-        pygame.draw.rect(screen, (255, 255, 255), (320, 500, int(height * (1 + np.sqrt(2))), height), 2)   # LQR rectangle
-        pygame.draw.rect(screen, (255, 255, 255), (800, 500, int(height * (2 + np.sqrt(2))), height), 2)   # LQR rectangle 2
+        pygame.draw.rect(screen, (255, 255, 255), (340, 600, int(height * (1 + np.sqrt(2))), height), 2)   # LQR rectangle
+        pygame.draw.rect(screen, (255, 255, 255), (840, 600, int(height * (1 + 2*np.sqrt(2))), height), 2)   # LQR rectangle 2
 
-        pygame.draw.rect(screen, (255, 255, 255), (320, 700, int(height * (1 + np.sqrt(2))), height), 2)   # MPC rectangle
-        pygame.draw.rect(screen, (255, 255, 255), (800, 700, int(height * (2 + np.sqrt(2))), height), 2)   # MPC rectangle 2
+        pygame.draw.rect(screen, (255, 255, 255), (340, 800, int(height * (1 + np.sqrt(2))), height), 2)   # MPC rectangle
+        pygame.draw.rect(screen, (255, 255, 255), (840, 800, int(height * (1 + 2*np.sqrt(2))), height), 2)   # MPC rectangle 2
 
 
 
