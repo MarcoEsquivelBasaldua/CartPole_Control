@@ -1,5 +1,6 @@
 import pygame
 import sys
+import numpy as np
 sys.path.insert(1, './src')
 import cart_pole
 import controllers
@@ -10,7 +11,7 @@ if __name__ == "__main__":
 
     # Environment sizes
     SCREEN_HEIGHT = 900
-    SCREEN_WIDTH  = 1400
+    SCREEN_WIDTH  = 1460
 
     # Positions
     TITLE_POS          = (SCREEN_WIDTH // 2,  50)
@@ -54,6 +55,25 @@ if __name__ == "__main__":
         stateFeedBackTitleDisplay.draw("State Feedback")
         lqrTitleDisplay.draw("LQR")
         mpcTitleDisplay.draw("MPC")
+
+        pygame.draw.line(screen, (255, 255, 255), (320, 0), (320, SCREEN_HEIGHT), 2)  # Vertical line
+        pygame.draw.line(screen, (255, 255, 255), (0, 100), (SCREEN_WIDTH, 100), 2)  # Horizontal line
+
+        # Draw rectangles for each control method
+        height = 180
+        pygame.draw.rect(screen, (255, 255, 255), (320, 100, int(height * (1 + np.sqrt(2))), height), 2)   # PID rectangle
+        pygame.draw.rect(screen, (255, 255, 255), (800, 100, int(height * (2 + np.sqrt(2))), height), 2)   # PID rectangle 2
+
+        pygame.draw.rect(screen, (255, 255, 255), (320, 300, int(height * (1 + np.sqrt(2))), height), 2)   # State Feedback rectangle
+        pygame.draw.rect(screen, (255, 255, 255), (800, 300, int(height * (2 + np.sqrt(2))), height), 2)   # State Feedback rectangle 2
+
+        pygame.draw.rect(screen, (255, 255, 255), (320, 500, int(height * (1 + np.sqrt(2))), height), 2)   # LQR rectangle
+        pygame.draw.rect(screen, (255, 255, 255), (800, 500, int(height * (2 + np.sqrt(2))), height), 2)   # LQR rectangle 2
+
+        pygame.draw.rect(screen, (255, 255, 255), (320, 700, int(height * (1 + np.sqrt(2))), height), 2)   # MPC rectangle
+        pygame.draw.rect(screen, (255, 255, 255), (800, 700, int(height * (2 + np.sqrt(2))), height), 2)   # MPC rectangle 2
+
+
 
         pygame.display.flip()    # Update the display
 
