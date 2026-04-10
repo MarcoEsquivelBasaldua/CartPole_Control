@@ -15,10 +15,10 @@ if __name__ == "__main__":
 
     # Positions
     TITLE_POS          = (SCREEN_WIDTH // 2,  50)
-    PID_TITLE_POS      = (180              , 200)
-    STATE_FEEDBACK_POS = (180              , 300)
-    LQR_TITLE_POS      = (180              , 500)
-    MPC_TITLE_POS      = (180              , 700)
+    PID_TITLE_POS      = (170              , 290)
+    STATE_FEEDBACK_POS = (170              , 490)
+    LQR_TITLE_POS      = (170              , 690)
+    MPC_TITLE_POS      = (170              , 890)
 
     # Colors
     SCREEN_COLOR = (  0,   0,   0)  # Black
