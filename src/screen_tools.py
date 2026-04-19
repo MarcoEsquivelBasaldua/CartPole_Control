@@ -19,14 +19,13 @@ STATE_FEEDBACK_POS = (170              , 490)
 LQR_TITLE_POS      = (170              , 690)
 MPC_TITLE_POS      = (170              , 890)
 
-# Colors
-SCREEN_COLOR = (  0,   0,   0)  # Black
-TITLE_COLOR  = (255, 153,  52)  # Orange
-TEXT_COLOR   = (255, 178, 102)  # Light Orange
-
 # Font sizes
 TITLE_SIZE    = 80
 SUBTITLE_SIZE = 50
+
+# Display Sizes
+DISPLAY_HEIGHT = 180
+DISPLAY_LENGTH = int(DISPLAY_HEIGHT * (1 + np.sqrt(2)))
 
 class Text:
     def __init__(self, screen:pygame.display, position:tuple, size:int, color:tuple):
@@ -56,14 +55,11 @@ class Text:
 
 
 def draw_static_screen(screen:pygame.display):
-    # Constants
-    DISPLAY_HEIGHT = 180
-    DISPLAY_LENGTH = int(DISPLAY_HEIGHT * (1 + np.sqrt(2)))
-
     # Draw background, except for the rectangles where the control methods will be displayed
     pygame.draw.rect(screen, colors["black"], (                   0,            0,          340, SCREEN_HEIGHT))  # Fill the background with black
     pygame.draw.rect(screen, colors["black"], (340                 ,            0, SCREEN_WIDTH,           200))  # Fill the top area with black
     pygame.draw.rect(screen, colors["black"], (340 + DISPLAY_LENGTH,            0, SCREEN_WIDTH, SCREEN_HEIGHT))  # Fill the left area with black
+    
     # Fill the areas below the rectangles with black
     pygame.draw.rect(screen, colors["black"], (340, 200 + DISPLAY_HEIGHT, DISPLAY_LENGTH, 20))  # Below PID
     pygame.draw.rect(screen, colors["black"], (340, 400 + DISPLAY_HEIGHT, DISPLAY_LENGTH, 20))  # Below State Feedback
@@ -71,11 +67,11 @@ def draw_static_screen(screen:pygame.display):
     pygame.draw.rect(screen, colors["black"], (340, 800 + DISPLAY_HEIGHT, DISPLAY_LENGTH, 20))  # Below MPC
 
     # Displays
-    titleDisplay              = Text(screen, TITLE_POS         , TITLE_SIZE   , TITLE_COLOR)
-    pidTitleDisplay           = Text(screen, PID_TITLE_POS     , SUBTITLE_SIZE, TEXT_COLOR )
-    stateFeedBackTitleDisplay = Text(screen, STATE_FEEDBACK_POS, SUBTITLE_SIZE, TEXT_COLOR )
-    lqrTitleDisplay           = Text(screen, LQR_TITLE_POS     , SUBTITLE_SIZE, TEXT_COLOR )
-    mpcTitleDisplay           = Text(screen, MPC_TITLE_POS     , SUBTITLE_SIZE, TEXT_COLOR )
+    titleDisplay              = Text(screen, TITLE_POS         , TITLE_SIZE   , colors["orange"])
+    pidTitleDisplay           = Text(screen, PID_TITLE_POS     , SUBTITLE_SIZE, colors["orange"] )
+    stateFeedBackTitleDisplay = Text(screen, STATE_FEEDBACK_POS, SUBTITLE_SIZE, colors["orange"] )
+    lqrTitleDisplay           = Text(screen, LQR_TITLE_POS     , SUBTITLE_SIZE, colors["orange"] )
+    mpcTitleDisplay           = Text(screen, MPC_TITLE_POS     , SUBTITLE_SIZE, colors["orange"] )
 
     # Draw titles
     titleDisplay.draw("Cart Pole - Control")

@@ -9,12 +9,8 @@ import screen_tools
 if __name__ == "__main__":
     pygame.init()
 
-    # Environment sizes
-    SCREEN_HEIGHT = 1000
-    SCREEN_WIDTH  = 1620
-
     # Canvas
-    screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+    screen = pygame.display.set_mode((screen_tools.SCREEN_WIDTH, screen_tools.SCREEN_HEIGHT))
 
     # Displays
     pygame.display.set_caption("Cart Pole Control")
