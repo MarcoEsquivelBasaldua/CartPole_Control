@@ -2,9 +2,9 @@ import pygame
 import numpy as np
 
 colors = {
-    "black": (  0,   0,   0),
-    "white": (255, 255, 255),
-    "orange": (255, 153,  52),
+    "black":        (  0,   0,   0),
+    "white":        (255, 255, 255),
+    "orange":       (255, 153,  52),
     "light_orange": (255, 178, 102)
 }
 
@@ -56,9 +56,21 @@ class Text:
 
 
 def draw_static_screen(screen:pygame.display):
-    screen.fill(colors["white"])
+    # Constants
+    DISPLAY_HEIGHT = 180
+    DISPLAY_LENGTH = int(DISPLAY_HEIGHT * (1 + np.sqrt(2)))
 
-     # Displays
+    # Draw background, except for the rectangles where the control methods will be displayed
+    pygame.draw.rect(screen, colors["black"], (                   0,            0,          340, SCREEN_HEIGHT))  # Fill the background with black
+    pygame.draw.rect(screen, colors["black"], (340                 ,            0, SCREEN_WIDTH,           200))  # Fill the top area with black
+    pygame.draw.rect(screen, colors["black"], (340 + DISPLAY_LENGTH,            0, SCREEN_WIDTH, SCREEN_HEIGHT))  # Fill the left area with black
+    # Fill the areas below the rectangles with black
+    pygame.draw.rect(screen, colors["black"], (340, 200 + DISPLAY_HEIGHT, DISPLAY_LENGTH, 20))  # Below PID
+    pygame.draw.rect(screen, colors["black"], (340, 400 + DISPLAY_HEIGHT, DISPLAY_LENGTH, 20))  # Below State Feedback
+    pygame.draw.rect(screen, colors["black"], (340, 600 + DISPLAY_HEIGHT, DISPLAY_LENGTH, 20))  # Below LQR
+    pygame.draw.rect(screen, colors["black"], (340, 800 + DISPLAY_HEIGHT, DISPLAY_LENGTH, 20))  # Below MPC
+
+    # Displays
     titleDisplay              = Text(screen, TITLE_POS         , TITLE_SIZE   , TITLE_COLOR)
     pidTitleDisplay           = Text(screen, PID_TITLE_POS     , SUBTITLE_SIZE, TEXT_COLOR )
     stateFeedBackTitleDisplay = Text(screen, STATE_FEEDBACK_POS, SUBTITLE_SIZE, TEXT_COLOR )
@@ -76,15 +88,15 @@ def draw_static_screen(screen:pygame.display):
     #pygame.draw.line(screen, (255, 255, 255), (0, 100), (SCREEN_WIDTH, 100), 2)  # Horizontal line
 
     # Draw rectangles for each control method
-    height = 180
-    pygame.draw.rect(screen, (255, 255, 255), (340, 200, int(height * (1 + np.sqrt(2))), height), 2)   # PID rectangle
-    pygame.draw.rect(screen, (255, 255, 255), (840, 200, int(height * (1 + 2*np.sqrt(2))), height), 2)   # PID rectangle 2
+    #height = 180
+    #pygame.draw.rect(screen, (255, 255, 255), (340, 200, int(height * (1 + np.sqrt(2))), height), 2)   # PID rectangle
+    #pygame.draw.rect(screen, (255, 255, 255), (840, 200, int(height * (1 + 2*np.sqrt(2))), height), 2)   # PID rectangle 2
 
-    pygame.draw.rect(screen, (255, 255, 255), (340, 400, int(height * (1 + np.sqrt(2))), height), 2)   # State Feedback rectangle
-    pygame.draw.rect(screen, (255, 255, 255), (840, 400, int(height * (1 + 2*np.sqrt(2))), height), 2)   # State Feedback rectangle 2
+    #pygame.draw.rect(screen, (255, 255, 255), (340, 400, int(height * (1 + np.sqrt(2))), height), 2)   # State Feedback rectangle
+    #pygame.draw.rect(screen, (255, 255, 255), (840, 400, int(height * (1 + 2*np.sqrt(2))), height), 2)   # State Feedback rectangle 2
 
-    pygame.draw.rect(screen, (255, 255, 255), (340, 600, int(height * (1 + np.sqrt(2))), height), 2)   # LQR rectangle
-    pygame.draw.rect(screen, (255, 255, 255), (840, 600, int(height * (1 + 2*np.sqrt(2))), height), 2)   # LQR rectangle 2
+    #pygame.draw.rect(screen, (255, 255, 255), (340, 600, int(height * (1 + np.sqrt(2))), height), 2)   # LQR rectangle
+    #pygame.draw.rect(screen, (255, 255, 255), (840, 600, int(height * (1 + 2*np.sqrt(2))), height), 2)   # LQR rectangle 2
 
-    pygame.draw.rect(screen, (255, 255, 255), (340, 800, int(height * (1 + np.sqrt(2))), height), 2)   # MPC rectangle
-    pygame.draw.rect(screen, (255, 255, 255), (840, 800, int(height * (1 + 2*np.sqrt(2))), height), 2)   # MPC rectangle 2
+    #pygame.draw.rect(screen, (255, 255, 255), (340, 800, int(height * (1 + np.sqrt(2))), height), 2)   # MPC rectangle
+    #pygame.draw.rect(screen, (255, 255, 255), (840, 800, int(height * (1 + 2*np.sqrt(2))), height), 2)   # MPC rectangle 2

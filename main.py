@@ -26,6 +26,8 @@ if __name__ == "__main__":
             if event.type == pygame.QUIT:
                 running = False
 
+        screen.fill(screen_tools.colors["white"])  # Clear the screen with white background
+
         screen_tools.draw_static_screen(screen)
 
         
