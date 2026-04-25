@@ -11,10 +11,10 @@ if __name__ == "__main__":
 
     # Canvas
     screen              = pygame.display.set_mode((screen_tools.SCREEN_WIDTH, screen_tools.SCREEN_HEIGHT))
-    pidCanvas           = screen_tools.Canvas(screen, screen_tools.PID_CANVAS_POS           )
-    stateFeedbackCanvas = screen_tools.Canvas(screen, screen_tools.STATE_FEEDBACK_CANVAS_POS)
-    lqrCanvas           = screen_tools.Canvas(screen, screen_tools.LQR_CANVAS_POS           )
-    mpcCanvas           = screen_tools.Canvas(screen, screen_tools.MPC_CANVAS_POS           )
+    pidCanvas           = screen_tools.Canvas(screen, screen_tools.PID_CANVAS_POS                        )
+    stateFeedbackCanvas = screen_tools.Canvas(screen, screen_tools.STATE_FEEDBACK_CANVAS_POS             )
+    lqrCanvas           = screen_tools.Canvas(screen, screen_tools.LQR_CANVAS_POS                        )
+    mpcCanvas           = screen_tools.Canvas(screen, screen_tools.MPC_CANVAS_POS                        )
 
     # Displays
     pygame.display.set_caption("Cart Pole Control")

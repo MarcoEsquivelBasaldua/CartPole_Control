@@ -32,6 +32,17 @@ DISPLAY_HEIGHT = 180
 DISPLAY_LENGTH = int(DISPLAY_HEIGHT * (1 + np.sqrt(2)))
 
 class Text:
+    """
+    A class for rendering text on a Pygame screen.
+    Attributes:
+        __screen (pygame.display): The Pygame display surface to draw on.
+        __position (tuple): A tuple (x, y) representing the position of the text's center.
+        __color (tuple): A tuple (R, G, B) representing the color of the text.
+        __font (pygame.font.Font): The Pygame font object used to render the text.
+
+    Methods:
+        draw(message): Draws the specified message on the screen at the initialized position, size, and color.
+    """
     def __init__(self, screen:pygame.display, position:tuple, size:int, color:tuple):
         """
         Initializes the Text class.
@@ -58,6 +69,19 @@ class Text:
         self.__screen.blit(textSurface, textRect)
 
 class Canvas:
+    """
+    A class for drawing a canvas on a Pygame screen, including a meter stick for visual reference.
+    Attributes:
+        __screen (pygame.display): The Pygame display surface to draw on.
+        __position (tuple): A tuple (x, y) representing the top-left corner of the canvas.
+        __halfSteps (int): The number of half steps for the meter stick graduations.
+        __meterStickPosY (int): The vertical position of the meter stick on the canvas.
+        __resolution (int): The pixel resolution for each unit on the meter stick.
+        
+    Methods:
+        __rel2abs_position(relPosition): Converts a relative position to an absolute position on the screen.
+        draw_meter_stick(): Draws a meter stick on the canvas, with a horizontal line and vertical graduation lines.
+    """
     def __init__(self, screen:pygame.display, position:tuple):
         """
         Initializes the Canvas class.
