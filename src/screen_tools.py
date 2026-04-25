@@ -13,11 +13,15 @@ SCREEN_HEIGHT = 1000
 SCREEN_WIDTH  = 1620
 
 # Positions
-TITLE_POS          = (SCREEN_WIDTH // 2,  50)
-PID_TITLE_POS      = (170              , 290)
-STATE_FEEDBACK_POS = (170              , 490)
-LQR_TITLE_POS      = (170              , 690)
-MPC_TITLE_POS      = (170              , 890)
+TITLE_POS                 = (SCREEN_WIDTH // 2,  50)
+PID_TITLE_POS             = (170              , 290)
+STATE_FEEDBACK_POS        = (170              , 490)
+LQR_TITLE_POS             = (170              , 690)
+MPC_TITLE_POS             = (170              , 890)
+PID_CANVAS_POS            = (340              , 200)
+STATE_FEEDBACK_CANVAS_POS = (340              , 400)
+LQR_CANVAS_POS            = (340              , 600)
+MPC_CANVAS_POS            = (340              , 800)
 
 # Font sizes
 TITLE_SIZE    = 80
@@ -52,6 +56,73 @@ class Text:
         textRect    = textSurface.get_rect(center = self.__position)
 
         self.__screen.blit(textSurface, textRect)
+
+class Canvas:
+    def __init__(self, screen:pygame.display, position:tuple):
+        """
+        Initializes the Canvas class.
+        Args:
+            screen (pygame.display): The Pygame display surface to draw on.
+            position (tuple): A tuple (x, y) representing the top-left corner of the canvas.
+        """
+        self.__screen         = screen
+        self.__position       = position
+        self.__halfSteps      = 5
+        self.__meterStickPosY = 30 #DISPLAY_HEIGHT // 2
+        self.__resolution     = DISPLAY_LENGTH // (2 * self.__halfSteps)
+
+    def __rel2abs_position(self, relPosition:tuple):
+        """
+        Converts a relative position to an absolute position on the screen.
+        Args:
+            relPosition (tuple): A tuple (x, y) representing the relative position.
+        Returns:
+            tuple: A tuple (x, y) representing the absolute position.
+        """
+        xAbs = self.__position[0] + relPosition[0]
+        yAbs = self.__position[1] + (DISPLAY_HEIGHT - relPosition[1])
+
+        return (xAbs, yAbs)
+    
+    def draw_meter_stick(self):
+        """
+        Draws a meter stick on the canvas, with a horizontal line and vertical graduation lines.
+        """
+        meterStickPosStart = self.__rel2abs_position((0, self.__meterStickPosY))
+        meterStickPosEnd   = self.__rel2abs_position((DISPLAY_LENGTH, self.__meterStickPosY))
+
+        # Horizontal line
+        pygame.draw.line(self.__screen, colors["black"], meterStickPosStart, meterStickPosEnd, width=2)
+
+        # Vertical lines
+        originX = DISPLAY_LENGTH // 2
+        for i in range(self.__halfSteps + 1):
+            vertLineLen    = 20
+            vertLineX      = originX + (i * self.__resolution)
+            vertLineXNeg   = originX - (i * self.__resolution)
+            vertLineYStart = self.__meterStickPosY - vertLineLen // 2
+            vertLineYEnd   = vertLineYStart + vertLineLen
+
+            vertLineStart = self.__rel2abs_position((vertLineX, vertLineYStart))
+            vertLineEnd   = self.__rel2abs_position((vertLineX, vertLineYEnd))
+
+            vertLineStartNeg = self.__rel2abs_position((vertLineXNeg, vertLineYStart))
+            vertLineEndNeg   = self.__rel2abs_position((vertLineXNeg, vertLineYEnd))
+
+            pygame.draw.line(self.__screen, colors["black"], vertLineStart   , vertLineEnd   , width=2)
+            if i > 0:
+                pygame.draw.line(self.__screen, colors["black"], vertLineStartNeg, vertLineEndNeg, width=2)
+            
+            # Scale graduation
+            scaleTextPos = self.__rel2abs_position((vertLineX, vertLineYStart - 10))
+            scaleText    = Text(self.__screen, scaleTextPos, 20, colors["black"])
+            scaleText.draw(str(i))
+
+            if i > 0:
+                scaleTextPosNeg = self.__rel2abs_position((vertLineXNeg, vertLineYStart - 10))
+                scaleTextNeg    = Text(self.__screen, scaleTextPosNeg, 20, colors["black"])
+                scaleTextNeg.draw(str(-i))
+
 
 
 def draw_static_screen(screen:pygame.display):
