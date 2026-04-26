@@ -62,7 +62,7 @@ class Canvas:
     Methods:
         __rel2abs_position(relPosition): Converts a relative position to an absolute position on the screen.
         __draw_meter_stick(): Draws a meter stick on the canvas, with a horizontal line and vertical graduation lines.
-        draw_cart(): Draws the cart on the screen. The cart's position and pole angle are determined by the attributes of the CartPole instance. The cart is represented as a rectangle, the wheels as circles, and the pole as a line with circles at the ends. The meter stick is also drawn for reference.
+        draw_cart(): Draws the cart on the screen.
     """
     def __init__(self, screen:pygame.display, position:tuple, cartPole:CartPole):
         """
