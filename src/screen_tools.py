@@ -32,6 +32,17 @@ SUBTITLE_SIZE = 50
 DISPLAY_HEIGHT = 180
 DISPLAY_LENGTH = int(DISPLAY_HEIGHT * (1 + np.sqrt(2)))
 
+# Slider Sizes and positions
+SLIDER_LENGTH    = DISPLAY_LENGTH
+SLIDER_HEIGHT    = 20
+SLIDER_POS       = (340, 150)
+SLIDER_TITLE_POS = (170, 170)
+
+# Meter stick
+INITIAL_CART_X        = 0.0
+MAX_CART_DISPLACEMENT = 5.0  # meters
+CART_DISP_RESOLUTION  = DISPLAY_LENGTH // (2 * MAX_CART_DISPLACEMENT)
+
 class CartPole:
     def __init__(self):
         self.cartMass    = 1.0
@@ -74,9 +85,7 @@ class Canvas:
         """
         self.__screen         = screen
         self.__position       = position
-        self.__halfSteps      = 5
         self.__meterStickPosY = 55
-        self.__resolution     = DISPLAY_LENGTH // (2 * self.__halfSteps)
         self.__cartPole       = cartPole
 
     def __rel2abs_position(self, relPosition:tuple):
@@ -104,10 +113,10 @@ class Canvas:
 
         # Vertical lines
         originX = DISPLAY_LENGTH // 2
-        for i in range(self.__halfSteps + 1):
+        for i in range(int(MAX_CART_DISPLACEMENT) + 1):
             vertLineLen    = 20
-            vertLineX      = originX + (i * self.__resolution)
-            vertLineXNeg   = originX - (i * self.__resolution)
+            vertLineX      = originX + (i * CART_DISP_RESOLUTION)
+            vertLineXNeg   = originX - (i * CART_DISP_RESOLUTION)
             vertLineYStart = self.__meterStickPosY - vertLineLen // 2
             vertLineYEnd   = vertLineYStart + vertLineLen
 
@@ -137,7 +146,7 @@ class Canvas:
         The cart is represented as a rectangle, the wheels as circles, and the pole as a line with circles at the ends. The meter stick is also drawn for reference.
         """
         scale          = 80  # pixels per meter
-        cartX          = int(self.__cartPole.cartX * self.__resolution + DISPLAY_LENGTH // 2)
+        cartX          = int(self.__cartPole.cartX * CART_DISP_RESOLUTION + DISPLAY_LENGTH // 2)
         cartLength     = int(scale * self.__cartPole.length)
         halfCartLength = cartLength // 2
         CartHeight     = int(scale * self.__cartPole.height)
@@ -217,6 +226,51 @@ class Text:
         self.__screen.blit(textSurface, textRect)
 
 
+class SlideBar:
+    """
+    A class for creating a horizontal slider bar on a Pygame screen, allowing the user to select a value by dragging a selector along the bar.
+    Attributes:
+        setPoint (float): The current value selected by the slider, calculated based on the position of the selector.
+        __screen (pygame.display): The Pygame display surface to draw on.
+        __sliderPos (int): The current horizontal position of the slider's selector.
+        __rect (pygame.Rect): A Pygame Rect object representing the area of the slider bar.
+    Methods:
+        draw(): Draws the slider bar and selector on the screen.
+        handle_event(event): Handles mouse events for dragging the selector.
+    """
+    def __init__(self, screen):
+        """
+        Initializes the SlideBar class.
+        Args:            screen (pygame.display): The Pygame display surface to draw on.
+        """
+        self.setPoint    = INITIAL_CART_X
+        self.__screen    = screen
+        self.__sliderPos = SLIDER_POS[0] + INITIAL_CART_X * CART_DISP_RESOLUTION + DISPLAY_LENGTH // 2
+        self.__rect      = pygame.Rect(SLIDER_POS[0], SLIDER_POS[1], SLIDER_LENGTH, SLIDER_HEIGHT)
+
+    def draw(self):
+        """
+        Draws the slider bar and selector on the screen.
+        """
+        pygame.draw.rect(self.__screen, colors["gray"], self.__rect)
+
+        # Selector position
+        pos = np.array((self.__sliderPos, SLIDER_POS[1] + SLIDER_HEIGHT//2)).astype(int)
+        pygame.draw.circle(self.__screen, colors["light_orange"], pos, SLIDER_HEIGHT//2 + 2)
+
+    def handle_event(self, event):
+        """
+        Handles mouse events for dragging the selector.
+        Args:
+            event (pygame.event.Event): The Pygame event to handle, expected to be a MOUSEMOTION event.
+        """
+        if self.__rect.collidepoint(event.pos):
+            self.__sliderPos = event.pos[0]
+
+            relPos = event.pos[0] - SLIDER_POS[0]
+            self.setPoint = relPos / (CART_DISP_RESOLUTION) - MAX_CART_DISPLACEMENT
+
+
 
 def draw_static_screen(screen:pygame.display):
     # Draw background, except for the rectangles where the control methods will be displayed
@@ -232,6 +286,7 @@ def draw_static_screen(screen:pygame.display):
 
     # Displays
     titleDisplay              = Text(screen, TITLE_POS         , TITLE_SIZE   , colors["orange"])
+    setPointText              = Text(screen, SLIDER_TITLE_POS, SUBTITLE_SIZE, colors["orange"])
     pidTitleDisplay           = Text(screen, PID_TITLE_POS     , SUBTITLE_SIZE, colors["orange"] )
     stateFeedBackTitleDisplay = Text(screen, STATE_FEEDBACK_POS, SUBTITLE_SIZE, colors["orange"] )
     lqrTitleDisplay           = Text(screen, LQR_TITLE_POS     , SUBTITLE_SIZE, colors["orange"] )
@@ -243,6 +298,7 @@ def draw_static_screen(screen:pygame.display):
     stateFeedBackTitleDisplay.draw("State Feedback")
     lqrTitleDisplay.draw("LQR")
     mpcTitleDisplay.draw("MPC")
+    setPointText.draw("Set Point")
 
     #pygame.draw.line(screen, (255, 255, 255), (320, 0), (320, SCREEN_HEIGHT), 2)  # Vertical line
     #pygame.draw.line(screen, (255, 255, 255), (0, 100), (SCREEN_WIDTH, 100), 2)  # Horizontal line

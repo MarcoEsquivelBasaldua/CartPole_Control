@@ -25,12 +25,17 @@ if __name__ == "__main__":
     # Displays
     pygame.display.set_caption("Cart Pole Control")
 
+    # Slider Set Point
+    setPointSlider = screen_tools.SlideBar(screen)
+
 
     running = True
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
+            elif event.type == pygame.MOUSEMOTION:
+                setPointSlider.handle_event(event)
 
         screen.fill(screen_tools.colors["white"])  # Clear the screen with white background
 
@@ -40,7 +45,14 @@ if __name__ == "__main__":
         lqrCanvas.draw_cart()
         mpcCanvas.draw_cart()
 
+        # Fill screen with static elements (titles, labels, etc.)
         screen_tools.draw_static_screen(screen)
+
+        # Draw slider set point
+        setPointSlider.draw()
+        #print(setPointSlider.setPoint)
+
+
 
         
 
