@@ -137,7 +137,7 @@ class Canvas:
         The cart is represented as a rectangle, the wheels as circles, and the pole as a line with circles at the ends. The meter stick is also drawn for reference.
         """
         scale          = 80  # pixels per meter
-        cartX          = int(self.__cartPole.cartX + DISPLAY_LENGTH // 2)
+        cartX          = int(self.__cartPole.cartX * self.__resolution + DISPLAY_LENGTH // 2)
         cartLength     = int(scale * self.__cartPole.length)
         halfCartLength = cartLength // 2
         CartHeight     = int(scale * self.__cartPole.height)
