@@ -5,7 +5,8 @@ colors = {
     "black":        (  0,   0,   0),
     "white":        (255, 255, 255),
     "orange":       (255, 153,  52),
-    "light_orange": (255, 178, 102)
+    "light_orange": (255, 178, 102),
+    "gray":         (160, 160, 160)
 }
 
 # Environment sizes
@@ -31,42 +32,21 @@ SUBTITLE_SIZE = 50
 DISPLAY_HEIGHT = 180
 DISPLAY_LENGTH = int(DISPLAY_HEIGHT * (1 + np.sqrt(2)))
 
-class Text:
-    """
-    A class for rendering text on a Pygame screen.
-    Attributes:
-        __screen (pygame.display): The Pygame display surface to draw on.
-        __position (tuple): A tuple (x, y) representing the position of the text's center.
-        __color (tuple): A tuple (R, G, B) representing the color of the text.
-        __font (pygame.font.Font): The Pygame font object used to render the text.
+class CartPole:
+    def __init__(self):
+        self.cartMass    = 1.0
+        self.cartX       = 0.0
+        self.cartXd      = 0.0
+        self.cartXdd     = 0.0
+        self.poleMass    = 0.5
+        self.poleLength  = 1.0
+        self.poleAngle   = np.pi
+        self.poleAngled  = 0.0
+        self.poleAngledd = 0.0
 
-    Methods:
-        draw(message): Draws the specified message on the screen at the initialized position, size, and color.
-    """
-    def __init__(self, screen:pygame.display, position:tuple, size:int, color:tuple):
-        """
-        Initializes the Text class.
-        Args:
-            screen (pygame.display): The Pygame display surface to draw on.
-            position (tuple): A tuple (x, y) representing the position of the text's center.
-            size (int): The font size of the text.
-            color (tuple): A tuple (R, G, B) representing the color of the text.
-        """
-        self.__screen   = screen
-        self.__position = position
-        self.__color    = color
-        self.__font     = pygame.font.Font(None, size)
-
-    def draw(self, message:str):
-        """
-        Draws the specified message on the screen at the initialized position, size, and color.
-        Args:
-            message (str): The text message to be displayed.
-        """
-        textSurface = self.__font.render(message, True, self.__color)
-        textRect    = textSurface.get_rect(center = self.__position)
-
-        self.__screen.blit(textSurface, textRect)
+        self.height = 0.6
+        self.length = self.height * 1.618
+        self.wheelRadius = 0.1
 
 class Canvas:
     """
@@ -77,23 +57,27 @@ class Canvas:
         __halfSteps (int): The number of half steps for the meter stick graduations.
         __meterStickPosY (int): The vertical position of the meter stick on the canvas.
         __resolution (int): The pixel resolution for each unit on the meter stick.
+        __cartPole (CartPole): An instance of the CartPole class.
         
     Methods:
         __rel2abs_position(relPosition): Converts a relative position to an absolute position on the screen.
-        draw_meter_stick(): Draws a meter stick on the canvas, with a horizontal line and vertical graduation lines.
+        __draw_meter_stick(): Draws a meter stick on the canvas, with a horizontal line and vertical graduation lines.
+        draw_cart(): Draws the cart on the screen. The cart's position and pole angle are determined by the attributes of the CartPole instance. The cart is represented as a rectangle, the wheels as circles, and the pole as a line with circles at the ends. The meter stick is also drawn for reference.
     """
-    def __init__(self, screen:pygame.display, position:tuple):
+    def __init__(self, screen:pygame.display, position:tuple, cartPole:CartPole):
         """
         Initializes the Canvas class.
         Args:
             screen (pygame.display): The Pygame display surface to draw on.
             position (tuple): A tuple (x, y) representing the top-left corner of the canvas.
+            cartPole (CartPole): An instance of the CartPole class
         """
         self.__screen         = screen
         self.__position       = position
         self.__halfSteps      = 5
-        self.__meterStickPosY = 30 #DISPLAY_HEIGHT // 2
+        self.__meterStickPosY = 55
         self.__resolution     = DISPLAY_LENGTH // (2 * self.__halfSteps)
+        self.__cartPole       = cartPole
 
     def __rel2abs_position(self, relPosition:tuple):
         """
@@ -108,7 +92,7 @@ class Canvas:
 
         return (xAbs, yAbs)
     
-    def draw_meter_stick(self):
+    def __draw_meter_stick(self):
         """
         Draws a meter stick on the canvas, with a horizontal line and vertical graduation lines.
         """
@@ -146,6 +130,91 @@ class Canvas:
                 scaleTextPosNeg = self.__rel2abs_position((vertLineXNeg, vertLineYStart - 10))
                 scaleTextNeg    = Text(self.__screen, scaleTextPosNeg, 20, colors["black"])
                 scaleTextNeg.draw(str(-i))
+
+    def draw_cart(self):
+        """
+        Draws the cart on the screen. The cart's position and pole angle are determined by the attributes of the CartPole instance.
+        The cart is represented as a rectangle, the wheels as circles, and the pole as a line with circles at the ends. The meter stick is also drawn for reference.
+        """
+        scale          = 80  # pixels per meter
+        cartX          = int(self.__cartPole.cartX + DISPLAY_LENGTH // 2)
+        cartLength     = int(scale * self.__cartPole.length)
+        halfCartLength = cartLength // 2
+        CartHeight     = int(scale * self.__cartPole.height)
+        cartWheelR     = int(scale * self.__cartPole.wheelRadius)
+        wheelBase      = cartLength // 2
+        poleLength     = int(scale * self.__cartPole.poleLength)
+        poleAngle      = self.__cartPole.poleAngle
+
+        # Draw cart body
+        cartTopLeftCorner    = (cartX - halfCartLength, self.__meterStickPosY + cartWheelR + CartHeight)
+        cartTopLeftCornerAbs = self.__rel2abs_position(cartTopLeftCorner)
+
+        pygame.draw.rect(self.__screen, colors["orange"], (cartTopLeftCornerAbs[0], cartTopLeftCornerAbs[1], cartLength, CartHeight))
+        pygame.draw.rect(self.__screen, colors["black"] , (cartTopLeftCornerAbs[0], cartTopLeftCornerAbs[1], cartLength, CartHeight), width=1)
+
+        # Draw wheels
+        leftWheelPos     = (cartX - wheelBase // 2, self.__meterStickPosY + cartWheelR)
+        leftWheelPosAbs  = self.__rel2abs_position(leftWheelPos)
+        rightWheelPos    = (cartX + wheelBase // 2, self.__meterStickPosY + cartWheelR)
+        rightWheelPosAbs = self.__rel2abs_position(rightWheelPos)
+
+        pygame.draw.circle(self.__screen, colors["light_orange"], leftWheelPosAbs , cartWheelR)
+        pygame.draw.circle(self.__screen, colors["light_orange"], rightWheelPosAbs, cartWheelR)
+        pygame.draw.circle(self.__screen, colors["black"]       , leftWheelPosAbs , cartWheelR, width=1)
+        pygame.draw.circle(self.__screen, colors["black"]       , rightWheelPosAbs, cartWheelR, width=1)
+
+        # Draw pole
+        poleStart = (cartX, self.__meterStickPosY + cartWheelR + CartHeight//2)
+        poleEnd   = (int(poleStart[0] + poleLength * np.sin(poleAngle)), int(poleStart[1] + poleLength * np.cos(poleAngle)))
+
+        poleStartAbs = self.__rel2abs_position(poleStart)
+        poleEndAbs   = self.__rel2abs_position(poleEnd)
+
+        pygame.draw.line(self.__screen, colors["gray"], poleStartAbs, poleEndAbs, width=10)
+        pygame.draw.circle(self.__screen, colors["gray"], poleStartAbs, 4)
+        pygame.draw.circle(self.__screen, colors["gray"], poleEndAbs, 4)
+
+        # Draw meter stick
+        self.__draw_meter_stick()
+        
+
+class Text:
+    """
+    A class for rendering text on a Pygame screen.
+    Attributes:
+        __screen (pygame.display): The Pygame display surface to draw on.
+        __position (tuple): A tuple (x, y) representing the position of the text's center.
+        __color (tuple): A tuple (R, G, B) representing the color of the text.
+        __font (pygame.font.Font): The Pygame font object used to render the text.
+
+    Methods:
+        draw(message): Draws the specified message on the screen at the initialized position, size, and color.
+    """
+    def __init__(self, screen:pygame.display, position:tuple, size:int, color:tuple):
+        """
+        Initializes the Text class.
+        Args:
+            screen (pygame.display): The Pygame display surface to draw on.
+            position (tuple): A tuple (x, y) representing the position of the text's center.
+            size (int): The font size of the text.
+            color (tuple): A tuple (R, G, B) representing the color of the text.
+        """
+        self.__screen   = screen
+        self.__position = position
+        self.__color    = color
+        self.__font     = pygame.font.Font(None, size)
+
+    def draw(self, message:str):
+        """
+        Draws the specified message on the screen at the initialized position, size, and color.
+        Args:
+            message (str): The text message to be displayed.
+        """
+        textSurface = self.__font.render(message, True, self.__color)
+        textRect    = textSurface.get_rect(center = self.__position)
+
+        self.__screen.blit(textSurface, textRect)
 
 
 
