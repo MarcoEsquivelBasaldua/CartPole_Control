@@ -230,7 +230,7 @@ class SlideBar:
     """
     A class for creating a horizontal slider bar on a Pygame screen, allowing the user to select a value by dragging a selector along the bar.
     Attributes:
-        setPoint (float): The current value selected by the slider, calculated based on the position of the selector.
+        __setPoint (float): The current value selected by the slider, calculated based on the position of the selector.
         __screen (pygame.display): The Pygame display surface to draw on.
         __sliderPos (int): The current horizontal position of the slider's selector.
         __rect (pygame.Rect): A Pygame Rect object representing the area of the slider bar.
@@ -243,7 +243,7 @@ class SlideBar:
         Initializes the SlideBar class.
         Args:            screen (pygame.display): The Pygame display surface to draw on.
         """
-        self.setPoint    = INITIAL_CART_X
+        self.__setPoint    = INITIAL_CART_X
         self.__screen    = screen
         self.__sliderPos = SLIDER_POS[0] + INITIAL_CART_X * CART_DISP_RESOLUTION + DISPLAY_LENGTH // 2
         self.__rect      = pygame.Rect(SLIDER_POS[0], SLIDER_POS[1], SLIDER_LENGTH, SLIDER_HEIGHT)
@@ -258,6 +258,14 @@ class SlideBar:
         pos = np.array((self.__sliderPos, SLIDER_POS[1] + SLIDER_HEIGHT//2)).astype(int)
         pygame.draw.circle(self.__screen, colors["light_orange"], pos, SLIDER_HEIGHT//2 + 2)
 
+    def get_set_point(self):
+        """
+        Returns the current value selected by the slider.
+        Returns:
+            float: The current set point value based on the position of the selector.
+        """
+        return self.__setPoint
+
     def handle_event(self, event):
         """
         Handles mouse events for dragging the selector.
@@ -268,7 +276,7 @@ class SlideBar:
             self.__sliderPos = event.pos[0]
 
             relPos = event.pos[0] - SLIDER_POS[0]
-            self.setPoint = relPos / (CART_DISP_RESOLUTION) - MAX_CART_DISPLACEMENT
+            self.__setPoint = relPos / (CART_DISP_RESOLUTION) - MAX_CART_DISPLACEMENT
 
 
 

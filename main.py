@@ -50,7 +50,7 @@ if __name__ == "__main__":
 
         # Draw slider set point
         setPointSlider.draw()
-        #print(setPointSlider.setPoint)
+        #print(setPointSlider.get_set_point())
 
 
 
