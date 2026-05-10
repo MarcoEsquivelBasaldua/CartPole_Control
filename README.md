@@ -31,10 +31,11 @@ $$
 $$
 
 The state-space representation of the system can be expressed in the form:
+
 $$
     \mathbf{M}(\mathbf{x})\ddot{\mathbf{x}} + \mathbf{C}(\mathbf{x}, \dot{\mathbf{x}})\dot{\mathbf{x}} + \mathbf{G}(\mathbf{x}) = \mathbf{B}u
 $$
 
-where $ \mathbf{M}(\mathbf{x}) $ is the mass matrix, $ \mathbf{C}(\mathbf{x}, \dot{\mathbf{x}}) $ is the Coriolis and centrifugal matrix, $ \mathbf{G}(\mathbf{x}) $ is the gravity vector, $ \mathbf{B} $ is the input matrix, and $ u $ is the control input (force applied to the cart).
+Where $\mathbf{M}(\mathbf{x})$ is the mass matrix, $\mathbf{C}(\mathbf{x}, \dot{\mathbf{x}})$ is the Coriolis and centrifugal matrix, $\mathbf{G}(\mathbf{x})$ is the gravity vector, $\mathbf{B}$ is the input matrix, and $u$ is the control input (force applied to the cart).
 
 
