@@ -243,7 +243,7 @@ class SlideBar:
         Initializes the SlideBar class.
         Args:            screen (pygame.display): The Pygame display surface to draw on.
         """
-        self.__setPoint    = INITIAL_CART_X
+        self.__setPoint  = INITIAL_CART_X
         self.__screen    = screen
         self.__sliderPos = SLIDER_POS[0] + INITIAL_CART_X * CART_DISP_RESOLUTION + DISPLAY_LENGTH // 2
         self.__rect      = pygame.Rect(SLIDER_POS[0], SLIDER_POS[1], SLIDER_LENGTH, SLIDER_HEIGHT)
@@ -282,23 +282,23 @@ class SlideBar:
 
 def draw_static_screen(screen:pygame.display):
     # Draw background, except for the rectangles where the control methods will be displayed
-    pygame.draw.rect(screen, colors["black"], (                   0,            0,          340, SCREEN_HEIGHT))  # Fill the background with black
-    pygame.draw.rect(screen, colors["black"], (340                 ,            0, SCREEN_WIDTH,           200))  # Fill the top area with black
-    pygame.draw.rect(screen, colors["black"], (340 + DISPLAY_LENGTH,            0, SCREEN_WIDTH, SCREEN_HEIGHT))  # Fill the left area with black
+    pygame.draw.rect(screen, colors["black"], (                   0, 0,          340, SCREEN_HEIGHT))  # Fill the background with black
+    pygame.draw.rect(screen, colors["black"], (340                 , 0, SCREEN_WIDTH,           200))  # Fill the top area with black
+    pygame.draw.rect(screen, colors["black"], (340 + DISPLAY_LENGTH, 0, SCREEN_WIDTH, SCREEN_HEIGHT))  # Fill the left area with black
     
     # Fill the areas below the rectangles with black
-    pygame.draw.rect(screen, colors["black"], (340, 200 + DISPLAY_HEIGHT, DISPLAY_LENGTH, 20))  # Below PID
-    pygame.draw.rect(screen, colors["black"], (340, 400 + DISPLAY_HEIGHT, DISPLAY_LENGTH, 20))  # Below State Feedback
-    pygame.draw.rect(screen, colors["black"], (340, 600 + DISPLAY_HEIGHT, DISPLAY_LENGTH, 20))  # Below LQR
-    pygame.draw.rect(screen, colors["black"], (340, 800 + DISPLAY_HEIGHT, DISPLAY_LENGTH, 20))  # Below MPC
+    pygame.draw.rect(screen, colors["black"], (PID_CANVAS_POS[0]           , PID_CANVAS_POS[1]            + DISPLAY_HEIGHT, DISPLAY_LENGTH, 20))  # Below PID
+    pygame.draw.rect(screen, colors["black"], (STATE_FEEDBACK_CANVAS_POS[0], STATE_FEEDBACK_CANVAS_POS[1] + DISPLAY_HEIGHT, DISPLAY_LENGTH, 20))  # Below State Feedback
+    pygame.draw.rect(screen, colors["black"], (LQR_CANVAS_POS[0]           , LQR_CANVAS_POS[1]            + DISPLAY_HEIGHT, DISPLAY_LENGTH, 20))  # Below LQR
+    pygame.draw.rect(screen, colors["black"], (MPC_CANVAS_POS[0]           , MPC_CANVAS_POS[1]            + DISPLAY_HEIGHT, DISPLAY_LENGTH, 20))  # Below MPC
 
     # Displays
     titleDisplay              = Text(screen, TITLE_POS         , TITLE_SIZE   , colors["orange"])
-    setPointText              = Text(screen, SLIDER_TITLE_POS, SUBTITLE_SIZE, colors["orange"])
-    pidTitleDisplay           = Text(screen, PID_TITLE_POS     , SUBTITLE_SIZE, colors["orange"] )
-    stateFeedBackTitleDisplay = Text(screen, STATE_FEEDBACK_POS, SUBTITLE_SIZE, colors["orange"] )
-    lqrTitleDisplay           = Text(screen, LQR_TITLE_POS     , SUBTITLE_SIZE, colors["orange"] )
-    mpcTitleDisplay           = Text(screen, MPC_TITLE_POS     , SUBTITLE_SIZE, colors["orange"] )
+    setPointText              = Text(screen, SLIDER_TITLE_POS  , SUBTITLE_SIZE, colors["orange"])
+    pidTitleDisplay           = Text(screen, PID_TITLE_POS     , SUBTITLE_SIZE, colors["orange"])
+    stateFeedBackTitleDisplay = Text(screen, STATE_FEEDBACK_POS, SUBTITLE_SIZE, colors["orange"])
+    lqrTitleDisplay           = Text(screen, LQR_TITLE_POS     , SUBTITLE_SIZE, colors["orange"])
+    mpcTitleDisplay           = Text(screen, MPC_TITLE_POS     , SUBTITLE_SIZE, colors["orange"])
 
     # Draw titles
     titleDisplay.draw("Cart Pole - Control")
