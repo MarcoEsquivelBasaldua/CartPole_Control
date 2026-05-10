@@ -11,3 +11,15 @@ wheels on the cart are not part of the system. They illustrate the absence of fr
 
 ![Cart-Pole System](./images/cartPole.png)
 
+## Equations of Motion
+The equations of motion for the cart-pole system can be derived using Newton's second law or Lagrangian mechanics. The system consists of a cart of mass \( M \) that can move horizontally and a pendulum (pole) of mass \( m \) and length \( l \) that is attached to the cart. The state of the system can be described by the position of the cart \( x \) and the angle of the pole \( \theta \). The equations of motion are given by:
+\[
+\begin{aligned}
+(m_c + m_p)\ddot{x} +\frac{m_pL}{2} \left(\cos(\theta)\ddot{\theta} - \sin(\theta)\dot{\theta}^2\right) &= F \\
+\cos(\theta)\ddot{x} + \frac{2L}{3}\ddot{\theta} - g \sin(\theta) &= 0
+\end{aligned}
+\]
+where \( F \) is the force applied to the cart, \( g \) is the acceleration due to gravity, \( \dot{x} \) is the velocity of the cart, and \( \dot{\theta} \) is the angular velocity of the pole.
+
+
+
