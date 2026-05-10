@@ -1,5 +1,8 @@
 import pygame
 import numpy as np
+from cart_pole import MAX_CART_DISPLACEMENT, INITIAL_CART_X, CartPole
+
+print("Screen Tools Imported")
 
 colors = {
     "black":        (  0,   0,   0),
@@ -39,25 +42,7 @@ SLIDER_POS       = (340, 150)
 SLIDER_TITLE_POS = (170, 170)
 
 # Meter stick
-INITIAL_CART_X        = 0.0
-MAX_CART_DISPLACEMENT = 5.0  # meters
 CART_DISP_RESOLUTION  = DISPLAY_LENGTH // (2 * MAX_CART_DISPLACEMENT)
-
-class CartPole:
-    def __init__(self):
-        self.cartMass    = 1.0
-        self.cartX       = 0.0
-        self.cartXd      = 0.0
-        self.cartXdd     = 0.0
-        self.poleMass    = 0.5
-        self.poleLength  = 1.0
-        self.poleAngle   = np.pi
-        self.poleAngled  = 0.0
-        self.poleAngledd = 0.0
-
-        self.height = 0.6
-        self.length = self.height * 1.618
-        self.wheelRadius = 0.1
 
 class Canvas:
     """
