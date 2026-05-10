@@ -10,10 +10,10 @@ if __name__ == "__main__":
     pygame.init()
 
     # CartPoles
-    pidCartPole           = screen_tools.CartPole()
-    stateFeedbackCartPole = screen_tools.CartPole()
-    lqrCartPole           = screen_tools.CartPole()
-    mpcCartPole           = screen_tools.CartPole()
+    pidCartPole           = cart_pole.CartPole()
+    stateFeedbackCartPole = cart_pole.CartPole()
+    lqrCartPole           = cart_pole.CartPole()
+    mpcCartPole           = cart_pole.CartPole()
 
     # Canvas
     screen              = pygame.display.set_mode((screen_tools.SCREEN_WIDTH, screen_tools.SCREEN_HEIGHT))
