@@ -21,19 +21,20 @@ $$
 \end{aligned}
 $$
 
-where \( F \) is the force applied to the cart, \( g \) is the acceleration due to gravity, \( \dot{x} \) is the velocity of the cart, and \( \dot{\theta} \) is the angular velocity of the pole.
+where $F$ is the force applied to the cart, $g$ is the acceleration due to gravity, $\dot{x}$ is the velocity of the cart, and $\dot{\theta}$ is the angular velocity of the pole.
 
 ## State Space Representation
-To analyze and design controllers for the cart-pole system, we can represent it in state-space form. We define the state vector \( \mathbf{x} \) as:
-\[\mathbf{x} = \begin{bmatrix} x \\ \dot{x} \\ \theta \\ \dot{\theta} \end{bmatrix}\]
+To analyze and design controllers for the cart-pole system, we can represent it in state-space form. We define the state vector $\mathbf{x}$ as:
+
+$$
+\mathbf{x} = \begin{bmatrix} x \\ \dot{x} \\ \theta \\ \dot{\theta} \end{bmatrix}
+$$
 
 The state-space representation of the system can be expressed in the form:
-\[
+$$
     \mathbf{M}(\mathbf{x})\ddot{\mathbf{x}} + \mathbf{C}(\mathbf{x}, \dot{\mathbf{x}})\dot{\mathbf{x}} + \mathbf{G}(\mathbf{x}) = \mathbf{B}u
-\]
-\[
-    \begin{bmatrix}\lef
-\]
-where \( \mathbf{M}(\mathbf{x}) \) is the mass matrix, \( \mathbf{C}(\mathbf{x}, \dot{\mathbf{x}}) \) is the Coriolis and centrifugal matrix, \( \mathbf{G}(\mathbf{x}) \) is the gravity vector, \( \mathbf{B} \) is the input matrix, and \( u \) is the control input (force applied to the cart).
+$$
+
+where $ \mathbf{M}(\mathbf{x}) $ is the mass matrix, $ \mathbf{C}(\mathbf{x}, \dot{\mathbf{x}}) $ is the Coriolis and centrifugal matrix, $ \mathbf{G}(\mathbf{x}) $ is the gravity vector, $ \mathbf{B} $ is the input matrix, and $ u $ is the control input (force applied to the cart).
 
 
