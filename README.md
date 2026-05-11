@@ -44,7 +44,7 @@ $$
 
 Where $\mathbf{M}(\mathbf{x})$ is the mass matrix, $\mathbf{C}(\mathbf{x}, \dot{\mathbf{x}})$ is the Coriolis and centrifugal matrix, $\mathbf{G}(\mathbf{x})$ is the gravity vector, $\mathbf{B}$ is the input matrix, and $u$ is the control input (force applied to the cart).
 
-Replacing $\mathbf{M}(x, \theta)$, $\mathbf{C}(x, \theta, \dot{x}, \dot{\theta})$, $\mathbf{G}(x, \theta)$ and \mathbf{B}, we have
+Replacing $\mathbf{M}(x, \theta)$, $\mathbf{C}(x, \theta, \dot{x}, \dot{\theta})$, $\mathbf{G}(x, \theta)$ and $\mathbf{B}$, we have
 
 $$
     \begin{bmatrix} m_c + m_p & \frac{m_pL}{2}\cos(\theta) \\ 
