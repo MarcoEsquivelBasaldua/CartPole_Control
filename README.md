@@ -67,8 +67,8 @@ The state-space representation is then given by:
 $$
     \dot{\mathbf{x}} = \begin{bmatrix} \dot{x} \\ 
     \dot{\theta} \\
-    -\mathbf{M}^{-1}\left( \mathbf{C}(x, \theta, \dot{x}, \dot{\theta})\left[\begin{matrix} \dot{x} \\ 
+    -\mathbf{M}^{-1}(x, \theta)\left( \mathbf{C}(x, \theta, \dot{x}, \dot{\theta})\left[\begin{matrix} \dot{x} \\ 
     \dot{\theta} \end{matrix}\right] + \mathbf{G}(x, \theta) \right) \end{bmatrix} + \begin{bmatrix} 0 \\ 
     0 \\
-    \mathbf{M}^{-1}\mathbf{B} \end{bmatrix}u
+    \mathbf{M}^{-1}(x, \theta)\mathbf{B} \end{bmatrix}u
 $$
