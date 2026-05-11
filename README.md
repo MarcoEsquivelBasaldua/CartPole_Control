@@ -27,7 +27,11 @@ where $F$ is the force applied to the cart, $g$ is the acceleration due to gravi
 To analyze and design controllers for the cart-pole system, we can represent it in state-space form. We define the state vector $\mathbf{x}$ as:
 
 $$
-\mathbf{x} = \left[\begin{matrix} x \\ \theta \\ \dot{x} \\ \dot{\theta} \end{matrix}\right]
+\mathbf{x} = \left[\begin{matrix} x \\ 
+\theta \\ 
+\dot{x} \\ 
+\dot{\theta}
+\end{matrix}\right]
 $$
 
 The state-space representation of the system can be obtain from the formulation of the equations of motion. The system can be expressed in the form:
