@@ -37,14 +37,31 @@ $$
 The state-space representation of the system can be obtain from the formulation of the equations of motion. The system can be expressed in the form:
 
 $$
-    \mathbf{M}(\mathbf{x})\left[\begin{matrix} \ddot{x} \\ 
-    \ddot{\theta} \end{matrix}\right] + \mathbf{C}(\mathbf{x}, \dot{\mathbf{x}})\left[\begin{matrix} \dot{x} \\ 
-    \dot{\theta} \end{matrix}\right] + \mathbf{G}(\mathbf{x}) = \mathbf{B}u
+    \mathbf{M}(x, \theta)\left[\begin{matrix} \ddot{x} \\ 
+    \ddot{\theta} \end{matrix}\right] + \mathbf{C}(x, \theta, \dot{x}, \dot{\theta})\left[\begin{matrix} \dot{x} \\ 
+    \dot{\theta} \end{matrix}\right] + \mathbf{G}(x, \theta) = \mathbf{B}u
 $$
 
 Where $\mathbf{M}(\mathbf{x})$ is the mass matrix, $\mathbf{C}(\mathbf{x}, \dot{\mathbf{x}})$ is the Coriolis and centrifugal matrix, $\mathbf{G}(\mathbf{x})$ is the gravity vector, $\mathbf{B}$ is the input matrix, and $u$ is the control input (force applied to the cart).
 
+Replacing $\mathbf{M}(x, \theta)$, $\mathbf{C}(x, \theta, \dot{x}, \dot{\theta})$, $\mathbf{G}(x, \theta)$ and \mathbf{B}, we have
+
+$$
+    \begin{bmatrix} m_c + m_p & \frac{m_pL}{2}\cos(\theta) \\ 
+    \frac{m_pL}{2}\cos(\theta) & \frac{2L}{3} \end{bmatrix}\left[\begin{matrix} \ddot{x} \\ 
+    \ddot{\theta} \end{matrix}\right] + \begin{bmatrix} 0 & -\frac{m_pL}{2}\sin(\theta)\dot{\theta}^2 \\ 
+    0 & 0 \end{bmatrix}\left[\begin{matrix} \dot{x} \\ 
+    \dot{\theta} \end{matrix}\right] + \begin{bmatrix} 0 \\ 
+    -g\sin(\theta) \end{bmatrix} = \begin{bmatrix} 1 \\ 
+    0 \end{bmatrix}u
+$$
+
 The state-space representation is then given by:
 
-
+$$
+    \dot{\mathbf{x}} = \begin{bmatrix} \dot{x} \\ 
+    \dot{\theta} \\
+    -\mathbf{M}^{-1}\left( \mathbf{C}(\mathbf{x}, \dot{\mathbf{x}})\left[\begin{matrix} \dot{x} \\ 
+    \dot{\theta} \end{matrix}\right] + \mathbf{G}(\mathbf{x}) \right) \end{bmatrix}
+$$
 
