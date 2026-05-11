@@ -48,12 +48,18 @@ Replacing $\mathbf{M}(x, \theta)$, $\mathbf{C}(x, \theta, \dot{x}, \dot{\theta})
 
 $$
     \begin{bmatrix} m_c + m_p & \frac{m_pL}{2}\cos(\theta) \\ 
-    \frac{m_pL}{2}\cos(\theta) & \frac{2L}{3} \end{bmatrix}\left[\begin{matrix} \ddot{x} \\ 
+    \cos(\theta) & \frac{2L}{3} \end{bmatrix}\left[\begin{matrix} \ddot{x} \\ 
     \ddot{\theta} \end{matrix}\right] + \begin{bmatrix} 0 & -\frac{m_pL}{2}\sin(\theta)\dot{\theta}^2 \\ 
     0 & 0 \end{bmatrix}\left[\begin{matrix} \dot{x} \\ 
     \dot{\theta} \end{matrix}\right] + \begin{bmatrix} 0 \\ 
     -g\sin(\theta) \end{bmatrix} = \begin{bmatrix} 1 \\ 
     0 \end{bmatrix}u
+$$
+
+with 
+
+$$
+u = F
 $$
 
 The state-space representation is then given by:
