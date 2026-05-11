@@ -37,7 +37,9 @@ $$
 The state-space representation of the system can be obtain from the formulation of the equations of motion. The system can be expressed in the form:
 
 $$
-    \mathbf{M}(\mathbf{x})\left[\begin{matrix} \ddot{x} \\ \ddot{\theta} \end{matrix}\right] + \mathbf{C}(\mathbf{x}, \dot{\mathbf{x}})\left[\begin{matrix} \dot{x} \\ \dot{\theta} \end{matrix}\right] + \mathbf{G}(\mathbf{x}) = \mathbf{B}u
+    \mathbf{M}(\mathbf{x})\left[\begin{matrix} \ddot{x} \\ 
+    \ddot{\theta} \end{matrix}\right] + \mathbf{C}(\mathbf{x}, \dot{\mathbf{x}})\left[\begin{matrix} \dot{x} \\ 
+    \dot{\theta} \end{matrix}\right] + \mathbf{G}(\mathbf{x}) = \mathbf{B}u
 $$
 
 Where $\mathbf{M}(\mathbf{x})$ is the mass matrix, $\mathbf{C}(\mathbf{x}, \dot{\mathbf{x}})$ is the Coriolis and centrifugal matrix, $\mathbf{G}(\mathbf{x})$ is the gravity vector, $\mathbf{B}$ is the input matrix, and $u$ is the control input (force applied to the cart).
