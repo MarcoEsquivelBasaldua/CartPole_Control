@@ -1,5 +1,7 @@
 import numpy as np
 
+from controllers import wrap_to_pi
+
 print("Cart Pole Control Imported")
 
 # Initial conditions and limits
@@ -55,7 +57,11 @@ class CartPole:
         """
         Returns the current state of the CartPole system as a tuple.
         """
-        return self.cartX, self.cartXdot, self.poleAngle, self.poleAngledot
+        state = np.array([[self.cartX], 
+                          [self.poleAngle], 
+                          [self.cartXdot],
+                          [self.poleAngledot]])
+        return state
     
     def __equations_of_motion(self, force: float):
         """
@@ -102,7 +108,9 @@ class CartPole:
         self.cartX        += self.cartXdot     * dt
         self.poleAngle    += self.poleAngledot * dt
 
-        print(f"Cart X: {self.cartX:.2f}, Cart Xdot: {self.cartXdot:.2f}, Pole Angle: {np.degrees(self.poleAngle):.2f} degrees, Pole Angledot: {np.degrees(self.poleAngledot):.2f} degrees/s")
+        self.poleAngle = wrap_to_pi(self.poleAngle)  # Ensure pole angle stays within (-pi, pi]
+
+        #print(f"Cart X: {self.cartX:.2f}, Cart Xdot: {self.cartXdot:.2f}, Pole Angle: {np.degrees(self.poleAngle):.2f} degrees, Pole Angledot: {np.degrees(self.poleAngledot):.2f} degrees/s")
 
     def apply_controller(self, set_point: float, dt: float):
         """
