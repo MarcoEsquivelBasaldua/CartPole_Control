@@ -20,10 +20,11 @@ WHEEL_RADIUS = 0.1  # meters
 POLE_LENGTH  = 1.0  # meters
 
 class CartPole:
-    def __init__(self):
+    def __init__(self, controller=None):
         """
         Initializes the CartPole system with default parameters and initial conditions.
         """
+        self.controller  = controller
         self.cartMass    = CART_MASS
         self.cartX       = INITIAL_CART_X
         self.cartXdot    = INITIAL_CART_X_VEL
@@ -56,7 +57,7 @@ class CartPole:
         """
         return self.cartX, self.cartXdot, self.poleAngle, self.poleAngledot
     
-    def equations_of_motion(self, force: float):
+    def __equations_of_motion(self, force: float):
         """
         Gets the equations of motion for the CartPole system, returning the mass matrix, the Coriolis and gravity vector, and the input matrix.
         """
@@ -85,11 +86,11 @@ class CartPole:
         
         return M, C, B
     
-    def update_state(self, force: float, dt: float):
+    def __update_state(self, force: float, dt: float):
         """
         Updates the state of the CartPole system based on the applied force and time step.
         """
-        M, C, B = self.equations_of_motion(force)
+        M, C, B = self.__equations_of_motion(force)
 
         # Create the State space representation
         M_inv    = np.linalg.inv(M)
@@ -102,3 +103,14 @@ class CartPole:
         self.poleAngle    += self.poleAngledot * dt
 
         print(f"Cart X: {self.cartX:.2f}, Cart Xdot: {self.cartXdot:.2f}, Pole Angle: {np.degrees(self.poleAngle):.2f} degrees, Pole Angledot: {np.degrees(self.poleAngledot):.2f} degrees/s")
+
+    def apply_controller(self, set_point: float, dt: float):
+        """
+        Applies the controller to compute the force based on the current state and set point, then updates the state.
+        """
+        if self.controller is not None:
+            force = self.controller.compute_control(self.get_current_state(), set_point)
+            self.__update_state(force, dt)
+        else:
+            constant_force = 1.0  # No control input
+            self.__update_state(constant_force, dt)

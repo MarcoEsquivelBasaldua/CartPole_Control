@@ -28,6 +28,9 @@ if __name__ == "__main__":
     # Slider Set Point
     setPointSlider = screen_tools.SlideBar(screen)
 
+    # Time control
+    dt = 0.01  # Time step for the simulation
+
 
     running = True
     while running:
@@ -53,11 +56,16 @@ if __name__ == "__main__":
         #print(setPointSlider.get_set_point())
 
 
+        # Apply controllers and update states
+        pidCartPole.apply_controller(setPointSlider.get_set_point(), dt)
+
+
 
         
 
 
 
         pygame.display.flip()    # Update the display
+        pygame.time.delay(10)   # Delay to control frame rate
 
     pygame.quit()
