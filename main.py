@@ -10,10 +10,10 @@ if __name__ == "__main__":
     pygame.init()
 
     # CartPoles
-    pidCartPole           = screen_tools.CartPole()
-    stateFeedbackCartPole = screen_tools.CartPole()
-    lqrCartPole           = screen_tools.CartPole()
-    mpcCartPole           = screen_tools.CartPole()
+    pidCartPole           = cart_pole.CartPole()
+    stateFeedbackCartPole = cart_pole.CartPole()
+    lqrCartPole           = cart_pole.CartPole()
+    mpcCartPole           = cart_pole.CartPole()
 
     # Canvas
     screen              = pygame.display.set_mode((screen_tools.SCREEN_WIDTH, screen_tools.SCREEN_HEIGHT))
@@ -27,6 +27,9 @@ if __name__ == "__main__":
 
     # Slider Set Point
     setPointSlider = screen_tools.SlideBar(screen)
+
+    # Time control
+    dt = 0.01  # Time step for the simulation
 
 
     running = True
@@ -53,11 +56,16 @@ if __name__ == "__main__":
         #print(setPointSlider.get_set_point())
 
 
+        # Apply controllers and update states
+        pidCartPole.apply_controller(setPointSlider.get_set_point(), dt)
+
+
 
         
 
 
 
         pygame.display.flip()    # Update the display
+        pygame.time.delay(10)   # Delay to control frame rate
 
     pygame.quit()
