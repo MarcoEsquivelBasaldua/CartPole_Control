@@ -3,7 +3,7 @@ import numpy as np
 print("Cart Pole Control Imported")
 
 # Initial conditions and limits
-INITIAL_CART_X         = -5.0
+INITIAL_CART_X         = 0.0
 INITIAL_CART_X_VEL     = 0.0
 INITIAL_CART_X_ACC     = 0.0
 INITIAL_POLE_ANGLE     = np.pi
