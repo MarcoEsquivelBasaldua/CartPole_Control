@@ -3,7 +3,7 @@ import numpy as np
 print("Cart Pole Control Imported")
 
 # Initial conditions and limits
-INITIAL_CART_X         = 0.0
+INITIAL_CART_X         = -5.0
 INITIAL_CART_X_VEL     = 0.0
 INITIAL_CART_X_ACC     = 0.0
 INITIAL_POLE_ANGLE     = np.pi
@@ -65,7 +65,7 @@ class CartPole:
         m_c       = self.cartMass
         m_p       = self.poleMass
         L         = self.poleLength
-        g         = -9.81
+        g         = 9.81
 
         cos_theta = np.cos(theta)
         sin_theta = np.sin(theta)
@@ -84,3 +84,21 @@ class CartPole:
                       [0.0]])
         
         return M, C, B
+    
+    def update_state(self, force: float, dt: float):
+        """
+        Updates the state of the CartPole system based on the applied force and time step.
+        """
+        M, C, B = self.equations_of_motion(force)
+
+        # Create the State space representation
+        M_inv    = np.linalg.inv(M)
+        stateDot = M_inv @ (B - C)
+        
+        # Solve the state using Euler's method
+        self.cartXdot     += stateDot[0, 0] * dt
+        self.poleAngledot += stateDot[1, 0] * dt
+        self.cartX        += self.cartXdot     * dt
+        self.poleAngle    += self.poleAngledot * dt
+
+        print(f"Cart X: {self.cartX:.2f}, Cart Xdot: {self.cartXdot:.2f}, Pole Angle: {np.degrees(self.poleAngle):.2f} degrees, Pole Angledot: {np.degrees(self.poleAngledot):.2f} degrees/s")
