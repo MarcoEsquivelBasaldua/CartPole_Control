@@ -21,18 +21,66 @@ POLE_LENGTH  = 1.0  # meters
 
 class CartPole:
     def __init__(self):
+        """
+        Initializes the CartPole system with default parameters and initial conditions.
+        """
         self.cartMass    = CART_MASS
         self.cartX       = INITIAL_CART_X
-        self.cartXd      = INITIAL_CART_X_VEL
-        self.cartXdd     = INITIAL_CART_X_ACC
+        self.cartXdot    = INITIAL_CART_X_VEL
+        self.cartXddot   = INITIAL_CART_X_ACC
         self.height      = CART_HEIGHT
         self.length      = CART_LENGTH
         self.wheelRadius = WHEEL_RADIUS
 
-        self.poleMass    = POLE_MASS
-        self.poleLength  = POLE_LENGTH
-        self.poleAngle   = INITIAL_POLE_ANGLE
-        self.poleAngled  = INITIAL_POLE_ANGLE_VEL
-        self.poleAngledd = INITIAL_POLE_ANGLE_ACC
+        self.poleMass      = POLE_MASS
+        self.poleLength    = POLE_LENGTH
+        self.poleAngle     = INITIAL_POLE_ANGLE
+        self.poleAngledot  = INITIAL_POLE_ANGLE_VEL
+        self.poleAngleddot = INITIAL_POLE_ANGLE_ACC
 
+    def reset(self):
+        """
+        Resets the CartPole system to its initial conditions.
+        """
+        self.cartX       = INITIAL_CART_X
+        self.cartXdot    = INITIAL_CART_X_VEL
+        self.cartXddot   = INITIAL_CART_X_ACC
+
+        self.poleAngle     = INITIAL_POLE_ANGLE
+        self.poleAngledot  = INITIAL_POLE_ANGLE_VEL
+        self.poleAngleddot = INITIAL_POLE_ANGLE_ACC
+
+    def get_current_state(self):
+        """
+        Returns the current state of the CartPole system as a tuple.
+        """
+        return self.cartX, self.cartXdot, self.poleAngle, self.poleAngledot
+    
+    def equations_of_motion(self, force: float):
+        """
+        Gets the equations of motion for the CartPole system, returning the mass matrix, the Coriolis and gravity vector, and the input matrix.
+        """
+        theta     = self.poleAngle
+        theta_dot = self.poleAngledot
+        m_c       = self.cartMass
+        m_p       = self.poleMass
+        L         = self.poleLength
+        g         = -9.81
+
+        cos_theta = np.cos(theta)
+        sin_theta = np.sin(theta)
+        mpl_2     = (m_p * L) / 2.0
+
+        # Mass matrix
+        M = np.array([[m_c + m_p, mpl_2 * cos_theta],
+                      [cos_theta, 2.0 * L / 3.0]])
         
+        # Coriolis and gravity vector
+        C = np.array([[-mpl_2 * theta_dot**2 * sin_theta],
+                      [-g * sin_theta]])
+        
+        # Input matrix
+        B = np.array([[force],
+                      [0.0]])
+        
+        return M, C, B
