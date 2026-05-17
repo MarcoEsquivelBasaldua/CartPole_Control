@@ -2,26 +2,42 @@ import numpy as np
 
 class PIDController:
     def __init__(self):
-        self.Kp = 0.0
-        self.Ki = 0.0
-        self.Kd = 0.0
-        self.integral = 0.0
-        self.prev_error = 0.0
+        self.KpX = 1.0
+        self.KiX = 0.0
+        self.KdX = 0.0
+        self.KpTheta = 10.0
+        self.KiTheta = 0.0
+        self.KdTheta = 0.0
+        self.integralX = 0.0
+        self.integralTheta = 0.0
+        self.prevErrorX = 0.0
+        self.prevErrorTheta = 0.0
 
-    def compute_control(self, setpoint: float, current_value: np.ndarray, dt: float) -> float:
-        setpoint = np.array([[setpoint],  # x cart position setpoint
-                             [0.0]])      # pole angle setpoint (upright)
+    def compute_control(self, setpoint: float, currentValue: np.ndarray, dt: float) -> float:
+        setpointVect = np.array([[setpoint],  # x cart position setpoint
+                                 [0.0]])      # pole angle setpoint (upright)
         
-        current_value = np.array([[current_value[0, 0]],  # x cart position
-                                  [current_value[1, 0]]])  # pole angle
+        currentValueVect = np.array([[currentValue[0, 0]],  # x cart position
+                                    [currentValue[1, 0]]])  # pole angle
 
-        error = setpoint - current_value
-        self.integral += error * dt
-        derivative = (error - self.prev_error) / dt if dt > 0 else 0.0
-        self.prev_error = error
+        # Outer loop for cart position control
+        errorX = setpoint - currentValue[0, 0]  # Cart position error
+        self.integralX += errorX * dt
+        derivativeX = (errorX - self.prevErrorX) / dt if dt > 0 else 0.0
+        self.prevErrorX = errorX
 
-        control_signal = self.Kp * error + self.Ki * self.integral + self.Kd * derivative
-        return control_signal
+        # Inner loop for pole angle control
+        thetaDesired = self.KpX * errorX + self.KiX * self.integralX + self.KdX * derivativeX  # Desired pole angle based on cart position error
+
+        errorTheta = angle_difference(thetaDesired, currentValue[1, 0])  # Pole angle error
+        self.integralTheta += errorTheta * dt
+        derivativeTheta = (errorTheta - self.prevErrorTheta) / dt if dt > 0 else 0.0
+        self.prevErrorTheta = errorTheta
+
+        # Compute control signal (force)
+        controlSignal = self.KpTheta * errorTheta + self.KiTheta * self.integralTheta + self.KdTheta * derivativeTheta
+        
+        return controlSignal
     
 
 
@@ -35,3 +51,10 @@ def wrap_to_pi(angle):
     if angle > np.pi:
         angle -= 2 * np.pi
     return angle
+
+def angle_difference(target, current):
+    """
+    Computes the shortest difference between two angles in radians, returning a value in the range (-pi, pi].
+    """
+    diff = wrap_to_pi(target - current)
+    return diff

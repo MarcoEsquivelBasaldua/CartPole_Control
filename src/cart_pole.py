@@ -117,7 +117,7 @@ class CartPole:
         Applies the controller to compute the force based on the current state and set point, then updates the state.
         """
         if self.controller is not None:
-            force = self.controller.compute_control(self.get_current_state(), set_point)
+            force = self.controller.compute_control(set_point, self.get_current_state(), dt)
             self.__update_state(force, dt)
         else:
             constant_force = 1.0  # No control input
