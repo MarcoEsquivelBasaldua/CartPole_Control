@@ -2,15 +2,14 @@ import numpy as np
 
 class PIDController:
     def __init__(self):
-        self.KpX = 0.0
+        self.KpX = 0.08
         self.KiX = 0.0
-        self.KdX = 0.0
+        self.KdX = 0.02
 
-        self.KpThetaUpper = 30.0
-        self.KpThetaUnder = 0.8
+        self.KpTheta = 40.0
+        self.KpThetaUnder = 2.0
         self.KiTheta = 0.0
-        #self.KdTheta = 0.0
-        self.KdTheta = 0.5
+        self.KdTheta = 2.5
 
         self.integralX      = 0.0
         self.integralTheta  = 0.0
@@ -27,31 +26,28 @@ class PIDController:
         poleVel = currentValue[3, 0]  # Pole angular velocity (radians/s)
 
         # Outer loop for cart position control
-        errorX = currentValue[0, 0] - setpoint  # Cart position error
+        errorX = currentValue[0, 0] - setpoint # Cart position error
         self.integralX += errorX * dt
         derivativeX = (errorX - self.prevErrorX) / dt if dt > 0 else 0.0
         self.prevErrorX = errorX
 
         # Inner loop for pole angle control
-        #thetaDesired = self.KpX * errorX + self.KiX * self.integralX + self.KdX * derivativeX  # Desired pole angle based on cart position error
-        thetaDesired = 0.0  # For now, we'll keep the pole upright
+        thetaDesired = - self.KpX * errorX - self.KiX * self.integralX - self.KdX * derivativeX  # Desired pole angle based on cart position error
+        #thetaDesired = 0.0  # For now, we'll keep the pole upright
 
-        errorTheta = angle_difference(thetaDesired, currentValue[1, 0])  # Pole angle error
+        errorTheta = angle_difference(currentValue[1, 0], thetaDesired)  # Pole angle error
         self.integralTheta += errorTheta * dt
         derivativeTheta = wrap_to_pi(errorTheta - self.prevErrorTheta) / dt if dt > 0 else 0.0
         self.prevErrorTheta = errorTheta
 
         # Compute control signal (force)
-        if abs(currentValue[1, 0]) >= np.pi / 2:
-            kpTh = self.KpThetaUnder
-        else:
-            kpTh = self.KpThetaUpper
-        controlSignal = kpTh * errorTheta + self.KiTheta * self.integralTheta + self.KdTheta * derivativeTheta
+        
+        controlSignal = - self.KpTheta * errorTheta - self.KiTheta * self.integralTheta - self.KdTheta * derivativeTheta
         
 
         #print(currentValue[1, 0])
-        #print("control ",controlSignal)
-        print(currentValue[3, 0]) # Pole angular velocity (radians/s)
+        print("control ",controlSignal)
+        #print(currentValue[3, 0]) # Pole angular velocity (radians/s)
         return controlSignal
     
 

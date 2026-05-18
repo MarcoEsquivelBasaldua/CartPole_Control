@@ -52,7 +52,7 @@ if __name__ == "__main__":
         mpcCanvas.draw_cart()
 
         # Fill screen with static elements (titles, labels, etc.)
-        #screen_tools.draw_static_screen(screen)
+        screen_tools.draw_static_screen(screen)
 
         # Draw slider set point
         setPointSlider.draw()
