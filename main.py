@@ -52,7 +52,7 @@ if __name__ == "__main__":
         mpcCanvas.draw_cart()
 
         # Fill screen with static elements (titles, labels, etc.)
-        screen_tools.draw_static_screen(screen)
+        #screen_tools.draw_static_screen(screen)
 
         # Draw slider set point
         setPointSlider.draw()
@@ -61,6 +61,7 @@ if __name__ == "__main__":
 
         # Apply controllers and update states
         pidCartPole.apply_controller(setPointSlider.get_set_point(), dt)
+        #print(f"PID Cart Pole State: {pidCartPole.get_current_state().flatten()}")
 
 
         

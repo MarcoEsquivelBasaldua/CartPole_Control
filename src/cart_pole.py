@@ -8,7 +8,7 @@ print("Cart Pole Control Imported")
 INITIAL_CART_X         = 0.0
 INITIAL_CART_X_VEL     = 0.0
 INITIAL_CART_X_ACC     = 0.0
-INITIAL_POLE_ANGLE     = np.pi
+INITIAL_POLE_ANGLE     = np.pi / 6.0  # 30 degrees from vertical
 INITIAL_POLE_ANGLE_VEL = 0.0
 INITIAL_POLE_ANGLE_ACC = 0.0
 MAX_CART_DISPLACEMENT  = 5.0  # meters
