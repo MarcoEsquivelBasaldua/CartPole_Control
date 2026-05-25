@@ -2,7 +2,7 @@ import numpy as np
 
 class PIDController:
     def __init__(self):
-        self.KpX = 0.2
+        self.KpX = 0.15
         self.KiX = 0.001
         self.KdX = 0.05
 
