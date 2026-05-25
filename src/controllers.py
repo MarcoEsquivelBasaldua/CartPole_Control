@@ -16,14 +16,6 @@ class PIDController:
         self.prevErrorTheta = 0.0
 
     def compute_control(self, setpoint: float, currentValue: np.ndarray, dt: float) -> float:
-        setpointVect = np.array([[setpoint],  # x cart position setpoint
-                                 [0.0]])      # pole angle setpoint (upright)
-        
-        currentValueVect = np.array([[currentValue[0, 0]],  # x cart position
-                                    [currentValue[1, 0]]])  # pole angle
-        
-        poleVel = currentValue[3, 0]  # Pole angular velocity (radians/s)
-
         # Outer loop for cart position control
         errorX = setpoint - currentValue[0, 0] # Cart position error
         self.integralX += errorX * dt
@@ -32,7 +24,6 @@ class PIDController:
 
         # Inner loop for pole angle control
         thetaDesired = self.KpX * errorX + self.KiX * self.integralX + self.KdX * derivativeX  # Desired pole angle based on cart position error
-        #thetaDesired = 0.0  # For now, we'll keep the pole upright
 
         errorTheta = angle_difference(thetaDesired, currentValue[1, 0])  # Pole angle error
         self.integralTheta += errorTheta * dt
@@ -42,13 +33,6 @@ class PIDController:
         # Compute control signal (force)
         controlSignal = - self.KpTheta * errorTheta - self.KiTheta * self.integralTheta - self.KdTheta * derivativeTheta
 
-        #controlSignal = thetaDesired * 100.0  # Scale the desired angle to get a control signal (this is a simple heuristic)
-        
-
-        #print(currentValue[1, 0])
-        #print("control ",controlSignal)
-        #print(currentValue[3, 0]) # Pole angular velocity (radians/s)
-        #print(errorX)
         return controlSignal
     
 
@@ -69,21 +53,4 @@ def angle_difference(target, current):
     Computes the shortest difference between two angles in radians, returning a value in the range (-pi, pi].
     """
     diff = wrap_to_pi(target - current)
-    return diff
-
-def angle_difference2(target, current, vel):
-    piOver2 = np.pi / 2.0
-    
-    if current >= piOver2:
-        if vel >= 0:
-            diff = 2 *np.pi - current
-        else:
-            diff = angle_difference(current, target)
-    elif current <= -piOver2:
-        if vel <= 0:
-            diff = -2 * np.pi + current
-        else:
-            diff = angle_difference(current, target)
-    else:
-        diff = angle_difference(target, current)
     return diff
