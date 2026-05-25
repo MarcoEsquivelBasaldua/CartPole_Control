@@ -2,7 +2,7 @@ import numpy as np
 
 from controllers import wrap_to_pi
 
-print("Cart Pole Control Imported")
+print("Cart Pole Class Imported")
 
 # Initial conditions and limits
 INITIAL_CART_X         = 0.0

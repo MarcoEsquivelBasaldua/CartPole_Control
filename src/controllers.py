@@ -1,7 +1,15 @@
 import numpy as np
 
+print("Cart Pole Controllers Imported")
+
 class PIDController:
+    """
+    A PID controller for the Cart Pole system. It computes the control signal (force) based on the current state of the system and a desired setpoint.
+    """
     def __init__(self):
+        """
+        Initializes the PID controller with default gains and internal state.
+        """
         self.KpX = 0.15
         self.KiX = 0.001
         self.KdX = 0.05
@@ -16,6 +24,15 @@ class PIDController:
         self.prevErrorTheta = 0.0
 
     def compute_control(self, setpoint: float, currentValue: np.ndarray, dt: float) -> float:
+        """
+        Computes the control signal (force) based on the current state of the system and a desired setpoint.
+        Parameters:
+            setpoint (float): The desired cart position.
+            currentValue (np.ndarray): The current state of the system, where currentValue[0, 0] is the cart position and currentValue[1, 0] is the pole angle.
+            dt (float): The time step for the simulation.
+        Returns:            
+            float: The computed control signal (force) to be applied to the cart.
+        """
         # Outer loop for cart position control
         errorX = setpoint - currentValue[0, 0] # Cart position error
         self.integralX += errorX * dt

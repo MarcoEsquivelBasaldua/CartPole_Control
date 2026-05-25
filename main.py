@@ -56,7 +56,6 @@ if __name__ == "__main__":
 
         # Draw slider set point
         setPointSlider.draw()
-        #print(setPointSlider.get_set_point())
 
 
         # Apply controllers and update states
