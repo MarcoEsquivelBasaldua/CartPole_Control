@@ -41,7 +41,9 @@ class CartPole:
         self.poleAngledot  = INITIAL_POLE_ANGLE_VEL
         self.poleAngleddot = INITIAL_POLE_ANGLE_ACC
 
-        self.forceHistory = []  # List of tuples (time, force) for plotting
+        self.forceHistory             = []
+        self.angleErrorHistory        = []
+        self.displacementErrorHistory = []
 
     def reset(self):
         """
@@ -121,13 +123,34 @@ class CartPole:
         if self.controller is not None:
             force = self.controller.compute_control(set_point, self.get_current_state(), dt)
             self.__update_state(force, dt)
-            self.forceHistory.append((dt, force))
         else:
             constant_force = 1.0  # No control input
             self.__update_state(constant_force, dt)
+
+        # Save force history for plotting
+        self.forceHistory.append(force)
+        self.forceHistory = self.forceHistory[-100:]  # Keep only the last 100 entries for plotting
+        
+        self.angleErrorHistory.append(-self.poleAngle)  # Desired angle is 0 (upright)
+        self.angleErrorHistory = self.angleErrorHistory[-100:]  # Keep only the last 100 entries for plotting
+
+        self.displacementErrorHistory.append(set_point - self.cartX)  # Track displacement error
+        self.displacementErrorHistory = self.displacementErrorHistory[-100:]  # Keep only the last 100 entries for plotting
 
     def get_force_history(self):
         """
         Returns the history of applied forces as a list of tuples (time, force).
         """
         return self.forceHistory
+
+    def get_angle_error_history(self):
+        """
+        Returns the history of angle errors as a list of tuples (time, angle error).
+        """
+        return self.angleErrorHistory
+
+    def get_displacement_error_history(self):
+        """
+        Returns the history of displacement errors as a list of tuples (time, displacement error).
+        """
+        return self.displacementErrorHistory
