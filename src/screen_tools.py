@@ -14,26 +14,30 @@ colors = {
 
 # Environment sizes
 SCREEN_HEIGHT = 1000
-SCREEN_WIDTH  = 1620
-
-# Positions
-TITLE_POS                 = (SCREEN_WIDTH // 2,  50)
-PID_TITLE_POS             = (170              , 290)
-STATE_FEEDBACK_POS        = (170              , 490)
-LQR_TITLE_POS             = (170              , 690)
-MPC_TITLE_POS             = (170              , 890)
-PID_CANVAS_POS            = (340              , 200)
-STATE_FEEDBACK_CANVAS_POS = (340              , 400)
-LQR_CANVAS_POS            = (340              , 600)
-MPC_CANVAS_POS            = (340              , 800)
+SCREEN_WIDTH  = 1690
 
 # Font sizes
 TITLE_SIZE    = 80
 SUBTITLE_SIZE = 50
 
 # Display Sizes
-DISPLAY_HEIGHT = 180
-DISPLAY_LENGTH = int(DISPLAY_HEIGHT * (1 + np.sqrt(2)))
+DISPLAY_HEIGHT       = 180
+DISPLAY_HEIGHT_SHORT = DISPLAY_HEIGHT // 2
+DISPLAY_LENGTH       = int(DISPLAY_HEIGHT * (1 + np.sqrt(2)))
+
+# Positions
+TITLE_POS                 = (SCREEN_WIDTH // 2,  50                       )
+PID_TITLE_POS             = (170              , 290                       )
+PID_CANVAS_POS            = (340              , 200                       )
+PID_FORCE_POS             = (790              , 200                       )
+PID_ANGLE_POS             = (1240             , 200                       )
+PID_X_POS                 = (1240             , 200 + DISPLAY_HEIGHT_SHORT)
+STATE_FEEDBACK_POS        = (170              , 490                       )
+LQR_TITLE_POS             = (170              , 690                       )
+MPC_TITLE_POS             = (170              , 890                       )
+STATE_FEEDBACK_CANVAS_POS = (340              , 400                       )
+LQR_CANVAS_POS            = (340              , 600                       )
+MPC_CANVAS_POS            = (340              , 800                       )
 
 # Slider Sizes and positions
 SLIDER_LENGTH    = DISPLAY_LENGTH
@@ -171,6 +175,13 @@ class Canvas:
 
         # Draw meter stick
         self.__draw_meter_stick()
+
+    def plot_force(self, forceHistory):
+
+        # Plot the force history
+        times, forces = zip(*forceHistory) if forceHistory else ([], [])
+
+        
         
 
 class Text:
@@ -299,7 +310,9 @@ def draw_static_screen(screen:pygame.display):
     # Draw rectangles for each control method
     #height = 180
     #pygame.draw.rect(screen, (255, 255, 255), (340, 200, int(height * (1 + np.sqrt(2))), height), 2)   # PID rectangle
-    #pygame.draw.rect(screen, (255, 255, 255), (840, 200, int(height * (1 + 2*np.sqrt(2))), height), 2)   # PID rectangle 2
+    pygame.draw.rect(screen, (255, 255, 255), (PID_FORCE_POS[0], PID_FORCE_POS[1], DISPLAY_LENGTH, DISPLAY_HEIGHT))   # PID rectangle 2
+    pygame.draw.rect(screen, (255, 255, 255), (PID_ANGLE_POS[0], PID_ANGLE_POS[1], DISPLAY_LENGTH, DISPLAY_HEIGHT_SHORT), 2)   # PID rectangle 3
+    pygame.draw.rect(screen, (255, 255, 255), (PID_X_POS[0]    , PID_X_POS[1]    , DISPLAY_LENGTH, DISPLAY_HEIGHT_SHORT), 2)   # PID rectangle 3
 
     #pygame.draw.rect(screen, (255, 255, 255), (340, 400, int(height * (1 + np.sqrt(2))), height), 2)   # State Feedback rectangle
     #pygame.draw.rect(screen, (255, 255, 255), (840, 400, int(height * (1 + 2*np.sqrt(2))), height), 2)   # State Feedback rectangle 2

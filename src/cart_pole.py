@@ -41,6 +41,8 @@ class CartPole:
         self.poleAngledot  = INITIAL_POLE_ANGLE_VEL
         self.poleAngleddot = INITIAL_POLE_ANGLE_ACC
 
+        self.forceHistory = []  # List of tuples (time, force) for plotting
+
     def reset(self):
         """
         Resets the CartPole system to its initial conditions.
@@ -119,6 +121,13 @@ class CartPole:
         if self.controller is not None:
             force = self.controller.compute_control(set_point, self.get_current_state(), dt)
             self.__update_state(force, dt)
+            self.forceHistory.append((dt, force))
         else:
             constant_force = 1.0  # No control input
             self.__update_state(constant_force, dt)
+
+    def get_force_history(self):
+        """
+        Returns the history of applied forces as a list of tuples (time, force).
+        """
+        return self.forceHistory
