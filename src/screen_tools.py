@@ -25,21 +25,21 @@ DISPLAY_HEIGHT = 180
 DISPLAY_LENGTH = int(DISPLAY_HEIGHT * (1 + np.sqrt(2)))
 
 # Positions
-TITLE_POS             = (SCREEN_WIDTH // 2,  50)
-ANGLE_ERROR_TITLE_POS = (890              , 170)
-DISPLACEMENT_ERROR_TITLE_POS = (1410, 170)
+TITLE_POS                    = (SCREEN_WIDTH // 2,  50)
+ANGLE_ERROR_TITLE_POS        = (890              , 170)
+DISPLACEMENT_ERROR_TITLE_POS = (1410             , 170)
 
 PID_TITLE_POS              = (170 , 290)
 PID_CANVAS_POS             = (340 , 200)
 PID_ANGLE_ERROR_POS        = (790 , 200)
 PID_DISPLACEMENT_ERROR_POS = (1240, 200)
 
-STATE_FEEDBACK_POS        = (170              , 490)
-LQR_TITLE_POS             = (170              , 690)
-MPC_TITLE_POS             = (170              , 890)
-STATE_FEEDBACK_CANVAS_POS = (340              , 400)
-LQR_CANVAS_POS            = (340              , 600)
-MPC_CANVAS_POS            = (340              , 800)
+STATE_FEEDBACK_POS        = (170, 490)
+LQR_TITLE_POS             = (170, 690)
+MPC_TITLE_POS             = (170, 890)
+STATE_FEEDBACK_CANVAS_POS = (340, 400)
+LQR_CANVAS_POS            = (340, 600)
+MPC_CANVAS_POS            = (340, 800)
 
 # Slider Sizes and positions
 SLIDER_LENGTH    = DISPLAY_LENGTH
@@ -187,28 +187,28 @@ class Canvas:
             angleErrorHistory (list): A list of angle error values (in radians) to be plotted over time.
         """
         # Draw min and max lines
-        maxError = np.pi
-        minError = -maxError
+        maxError   = np.pi
+        minError   = -maxError
         errorRange = maxError - minError
-        lineColor = colors["gray"]
-        lineWidth = 2
+        lineColor  = colors["gray"]
+        lineWidth  = 2
 
         UpperLimitText = Text(self.__screen, self.__rel2abs_position((20, 160), self.__angleErrorDisplayPos), 25, colors["black"])
+        LowerLimitText = Text(self.__screen, self.__rel2abs_position((20,  20), self.__angleErrorDisplayPos), 25, colors["black"])
         UpperLimitText.draw("π")
-        LowerLimitText = Text(self.__screen, self.__rel2abs_position((20, 20), self.__angleErrorDisplayPos), 25, colors["black"])
         LowerLimitText.draw("-π")
 
-        upperLineErrorStart = self.__rel2abs_position((0, 170), self.__angleErrorDisplayPos)
-        upperLineErrorEnd   = self.__rel2abs_position((DISPLAY_LENGTH, 170), self.__angleErrorDisplayPos)
-        middleLineErrorStart = self.__rel2abs_position((0, 90), self.__angleErrorDisplayPos)
-        middleLineErrorEnd   = self.__rel2abs_position((DISPLAY_LENGTH, 90), self.__angleErrorDisplayPos)
-        lowerLineErrorStart = self.__rel2abs_position((0, 10), self.__angleErrorDisplayPos)
-        lowerLineErrorEnd   = self.__rel2abs_position((DISPLAY_LENGTH, 10), self.__angleErrorDisplayPos)
+        upperLineErrorStart  = self.__rel2abs_position((0             , 170), self.__angleErrorDisplayPos)
+        upperLineErrorEnd    = self.__rel2abs_position((DISPLAY_LENGTH, 170), self.__angleErrorDisplayPos)
+        middleLineErrorStart = self.__rel2abs_position((0             ,  90), self.__angleErrorDisplayPos)
+        middleLineErrorEnd   = self.__rel2abs_position((DISPLAY_LENGTH,  90), self.__angleErrorDisplayPos)
+        lowerLineErrorStart  = self.__rel2abs_position((0             ,  10), self.__angleErrorDisplayPos)
+        lowerLineErrorEnd    = self.__rel2abs_position((DISPLAY_LENGTH,  10), self.__angleErrorDisplayPos)
 
 
-        pygame.draw.line(self.__screen, lineColor, upperLineErrorStart, upperLineErrorEnd, width=lineWidth)
+        pygame.draw.line(self.__screen, lineColor, upperLineErrorStart , upperLineErrorEnd , width=lineWidth)
         pygame.draw.line(self.__screen, lineColor, middleLineErrorStart, middleLineErrorEnd, width=lineWidth)
-        pygame.draw.line(self.__screen, lineColor, lowerLineErrorStart, lowerLineErrorEnd, width=lineWidth)
+        pygame.draw.line(self.__screen, lineColor, lowerLineErrorStart , lowerLineErrorEnd , width=lineWidth)
 
         if len(angleErrorHistory) > 1:
             for i in range(1, len(angleErrorHistory)):
@@ -230,28 +230,29 @@ class Canvas:
         Plots the displacement error history on the canvas. The displacement error is expected to be in meters, and the plot is scaled to fit within the canvas area designated for displacement error display.
         Args:
             displacementErrorHistory (list): A list of displacement error values (in meters) to be plotted over time.
-        """        # Draw min and max lines
-        maxError = MAX_CART_DISPLACEMENT
-        minError = -maxError
+        """        
+        # Draw min and max lines
+        maxError   = MAX_CART_DISPLACEMENT
+        minError   = -maxError
         errorRange = maxError - minError
-        lineColor = colors["gray"]
-        lineWidth = 2
+        lineColor  = colors["gray"]
+        lineWidth  = 2
 
         UpperLimitText = Text(self.__screen, self.__rel2abs_position((20, 160), self.__displacementErrorDisplayPos), 25, colors["black"])
+        LowerLimitText = Text(self.__screen, self.__rel2abs_position((20,  20), self.__displacementErrorDisplayPos), 25, colors["black"])
         UpperLimitText.draw(f"{MAX_CART_DISPLACEMENT} m")
-        LowerLimitText = Text(self.__screen, self.__rel2abs_position((20, 20), self.__displacementErrorDisplayPos), 25, colors["black"])
         LowerLimitText.draw(f"{-MAX_CART_DISPLACEMENT} m")
 
-        upperLineErrorStart = self.__rel2abs_position((0, 170), self.__displacementErrorDisplayPos)
-        upperLineErrorEnd   = self.__rel2abs_position((DISPLAY_LENGTH, 170), self.__displacementErrorDisplayPos)
-        middleLineErrorStart = self.__rel2abs_position((0, 90), self.__displacementErrorDisplayPos)
-        middleLineErrorEnd   = self.__rel2abs_position((DISPLAY_LENGTH, 90), self.__displacementErrorDisplayPos)
-        lowerLineErrorStart = self.__rel2abs_position((0, 10), self.__displacementErrorDisplayPos)
-        lowerLineErrorEnd   = self.__rel2abs_position((DISPLAY_LENGTH, 10), self.__displacementErrorDisplayPos)
+        upperLineErrorStart  = self.__rel2abs_position((0             , 170), self.__displacementErrorDisplayPos)
+        upperLineErrorEnd    = self.__rel2abs_position((DISPLAY_LENGTH, 170), self.__displacementErrorDisplayPos)
+        middleLineErrorStart = self.__rel2abs_position((0             ,  90), self.__displacementErrorDisplayPos)
+        middleLineErrorEnd   = self.__rel2abs_position((DISPLAY_LENGTH,  90), self.__displacementErrorDisplayPos)
+        lowerLineErrorStart  = self.__rel2abs_position((0             ,  10), self.__displacementErrorDisplayPos)
+        lowerLineErrorEnd    = self.__rel2abs_position((DISPLAY_LENGTH,  10), self.__displacementErrorDisplayPos)
 
-        pygame.draw.line(self.__screen, lineColor, upperLineErrorStart, upperLineErrorEnd, width=lineWidth)
+        pygame.draw.line(self.__screen, lineColor, upperLineErrorStart , upperLineErrorEnd , width=lineWidth)
         pygame.draw.line(self.__screen, lineColor, middleLineErrorStart, middleLineErrorEnd, width=lineWidth)
-        pygame.draw.line(self.__screen, lineColor, lowerLineErrorStart, lowerLineErrorEnd, width=lineWidth)
+        pygame.draw.line(self.__screen, lineColor, lowerLineErrorStart , lowerLineErrorEnd , width=lineWidth)
 
         if len(displacementErrorHistory) > 1:
             for i in range(1, len(displacementErrorHistory)):
@@ -394,14 +395,9 @@ def draw_static_screen(screen:pygame.display):
     mpcTitleDisplay.draw("MPC")
     setPointText.draw("Set Point")
 
-    #pygame.draw.line(screen, (255, 255, 255), (320, 0), (320, SCREEN_HEIGHT), 2)  # Vertical line
-    #pygame.draw.line(screen, (255, 255, 255), (0, 100), (SCREEN_WIDTH, 100), 2)  # Horizontal line
-
     # Draw rectangles for each control method
-    #height = 180
-    #pygame.draw.rect(screen, (255, 255, 255), (340, 200, int(height * (1 + np.sqrt(2))), height), 2)   # PID rectangle
-    pygame.draw.rect(screen, (255, 255, 255), (PID_ANGLE_ERROR_POS[0], PID_ANGLE_ERROR_POS[1], DISPLAY_LENGTH, DISPLAY_HEIGHT))   # PID rectangle 2
-    pygame.draw.rect(screen, (255, 255, 255), (PID_DISPLACEMENT_ERROR_POS[0], PID_DISPLACEMENT_ERROR_POS[1], DISPLAY_LENGTH, DISPLAY_HEIGHT))   # PID rectangle 3
+    pygame.draw.rect(screen, (255, 255, 255), (PID_ANGLE_ERROR_POS[0], PID_ANGLE_ERROR_POS[1], DISPLAY_LENGTH, DISPLAY_HEIGHT))
+    pygame.draw.rect(screen, (255, 255, 255), (PID_DISPLACEMENT_ERROR_POS[0], PID_DISPLACEMENT_ERROR_POS[1], DISPLAY_LENGTH, DISPLAY_HEIGHT))
 
     #pygame.draw.rect(screen, (255, 255, 255), (340, 400, int(height * (1 + np.sqrt(2))), height), 2)   # State Feedback rectangle
     #pygame.draw.rect(screen, (255, 255, 255), (840, 400, int(height * (1 + 2*np.sqrt(2))), height), 2)   # State Feedback rectangle 2
