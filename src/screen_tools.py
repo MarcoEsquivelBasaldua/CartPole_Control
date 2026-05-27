@@ -21,23 +21,21 @@ TITLE_SIZE    = 80
 SUBTITLE_SIZE = 50
 
 # Display Sizes
-DISPLAY_HEIGHT       = 180
-DISPLAY_HEIGHT_SHORT = DISPLAY_HEIGHT // 2
-DISPLAY_LENGTH       = int(DISPLAY_HEIGHT * (1 + np.sqrt(2)))
+DISPLAY_HEIGHT = 180
+DISPLAY_LENGTH = int(DISPLAY_HEIGHT * (1 + np.sqrt(2)))
 
 # Positions
-TITLE_POS                 = (SCREEN_WIDTH // 2,  50                       )
-PID_TITLE_POS             = (170              , 290                       )
-PID_CANVAS_POS            = (340              , 200                       )
-PID_FORCE_POS             = (790              , 200                       )
-PID_ANGLE_POS             = (1240             , 200                       )
-PID_X_POS                 = (1240             , 200 + DISPLAY_HEIGHT_SHORT)
-STATE_FEEDBACK_POS        = (170              , 490                       )
-LQR_TITLE_POS             = (170              , 690                       )
-MPC_TITLE_POS             = (170              , 890                       )
-STATE_FEEDBACK_CANVAS_POS = (340              , 400                       )
-LQR_CANVAS_POS            = (340              , 600                       )
-MPC_CANVAS_POS            = (340              , 800                       )
+TITLE_POS                 = (SCREEN_WIDTH // 2,  50)
+PID_TITLE_POS             = (170              , 290)
+PID_CANVAS_POS            = (340              , 200)
+PID_FORCE_POS             = (790              , 200)
+PID_ERRORS_POS            = (1240             , 200)
+STATE_FEEDBACK_POS        = (170              , 490)
+LQR_TITLE_POS             = (170              , 690)
+MPC_TITLE_POS             = (170              , 890)
+STATE_FEEDBACK_CANVAS_POS = (340              , 400)
+LQR_CANVAS_POS            = (340              , 600)
+MPC_CANVAS_POS            = (340              , 800)
 
 # Slider Sizes and positions
 SLIDER_LENGTH    = DISPLAY_LENGTH
@@ -72,12 +70,14 @@ class Canvas:
             position (tuple): A tuple (x, y) representing the top-left corner of the canvas.
             cartPole (CartPole): An instance of the CartPole class
         """
-        self.__screen         = screen
-        self.__position       = position
-        self.__meterStickPosY = 55
-        self.__cartPole       = cartPole
+        self.__screen                      = screen
+        self.__cartDisplaypos              = position
+        self.__angleErrorDisplayPos        = (position[0] + 450, position[1])
+        self.__displacementErrorDisplayPos = (position[0] + 900, position[1])
+        self.__meterStickPosY              = 55
+        self.__cartPole                    = cartPole
 
-    def __rel2abs_position(self, relPosition:tuple):
+    def __rel2abs_position(self, relPosition:tuple, upLeftCoerner:tuple=(0, 0)):
         """
         Converts a relative position to an absolute position on the screen.
         Args:
@@ -85,8 +85,8 @@ class Canvas:
         Returns:
             tuple: A tuple (x, y) representing the absolute position.
         """
-        xAbs = self.__position[0] + relPosition[0]
-        yAbs = self.__position[1] + (DISPLAY_HEIGHT - relPosition[1])
+        xAbs = upLeftCoerner[0] + relPosition[0]
+        yAbs = upLeftCoerner[1] + (DISPLAY_HEIGHT - relPosition[1])
 
         return (xAbs, yAbs)
     
@@ -94,8 +94,8 @@ class Canvas:
         """
         Draws a meter stick on the canvas, with a horizontal line and vertical graduation lines.
         """
-        meterStickPosStart = self.__rel2abs_position((0, self.__meterStickPosY))
-        meterStickPosEnd   = self.__rel2abs_position((DISPLAY_LENGTH, self.__meterStickPosY))
+        meterStickPosStart = self.__rel2abs_position((0, self.__meterStickPosY), self.__cartDisplaypos)
+        meterStickPosEnd   = self.__rel2abs_position((DISPLAY_LENGTH, self.__meterStickPosY), self.__cartDisplaypos)
 
         # Horizontal line
         pygame.draw.line(self.__screen, colors["black"], meterStickPosStart, meterStickPosEnd, width=2)
@@ -109,23 +109,23 @@ class Canvas:
             vertLineYStart = self.__meterStickPosY - vertLineLen // 2
             vertLineYEnd   = vertLineYStart + vertLineLen
 
-            vertLineStart = self.__rel2abs_position((vertLineX, vertLineYStart))
-            vertLineEnd   = self.__rel2abs_position((vertLineX, vertLineYEnd))
+            vertLineStart = self.__rel2abs_position((vertLineX, vertLineYStart), self.__cartDisplaypos)
+            vertLineEnd   = self.__rel2abs_position((vertLineX, vertLineYEnd), self.__cartDisplaypos)
 
-            vertLineStartNeg = self.__rel2abs_position((vertLineXNeg, vertLineYStart))
-            vertLineEndNeg   = self.__rel2abs_position((vertLineXNeg, vertLineYEnd))
+            vertLineStartNeg = self.__rel2abs_position((vertLineXNeg, vertLineYStart), self.__cartDisplaypos)
+            vertLineEndNeg   = self.__rel2abs_position((vertLineXNeg, vertLineYEnd), self.__cartDisplaypos)
 
             pygame.draw.line(self.__screen, colors["black"], vertLineStart   , vertLineEnd   , width=2)
             if i > 0:
                 pygame.draw.line(self.__screen, colors["black"], vertLineStartNeg, vertLineEndNeg, width=2)
             
             # Scale graduation
-            scaleTextPos = self.__rel2abs_position((vertLineX, vertLineYStart - 10))
+            scaleTextPos = self.__rel2abs_position((vertLineX, vertLineYStart - 10), self.__cartDisplaypos)
             scaleText    = Text(self.__screen, scaleTextPos, 20, colors["black"])
             scaleText.draw(str(i))
 
             if i > 0:
-                scaleTextPosNeg = self.__rel2abs_position((vertLineXNeg, vertLineYStart - 10))
+                scaleTextPosNeg = self.__rel2abs_position((vertLineXNeg, vertLineYStart - 10), self.__cartDisplaypos)
                 scaleTextNeg    = Text(self.__screen, scaleTextPosNeg, 20, colors["black"])
                 scaleTextNeg.draw(str(-i))
 
@@ -146,16 +146,16 @@ class Canvas:
 
         # Draw cart body
         cartTopLeftCorner    = (cartX - halfCartLength, self.__meterStickPosY + cartWheelR + CartHeight)
-        cartTopLeftCornerAbs = self.__rel2abs_position(cartTopLeftCorner)
+        cartTopLeftCornerAbs = self.__rel2abs_position(cartTopLeftCorner, self.__cartDisplaypos)
 
         pygame.draw.rect(self.__screen, colors["orange"], (cartTopLeftCornerAbs[0], cartTopLeftCornerAbs[1], cartLength, CartHeight))
         pygame.draw.rect(self.__screen, colors["black"] , (cartTopLeftCornerAbs[0], cartTopLeftCornerAbs[1], cartLength, CartHeight), width=1)
 
         # Draw wheels
         leftWheelPos     = (cartX - wheelBase // 2, self.__meterStickPosY + cartWheelR)
-        leftWheelPosAbs  = self.__rel2abs_position(leftWheelPos)
+        leftWheelPosAbs  = self.__rel2abs_position(leftWheelPos, self.__cartDisplaypos)
         rightWheelPos    = (cartX + wheelBase // 2, self.__meterStickPosY + cartWheelR)
-        rightWheelPosAbs = self.__rel2abs_position(rightWheelPos)
+        rightWheelPosAbs = self.__rel2abs_position(rightWheelPos, self.__cartDisplaypos)
 
         pygame.draw.circle(self.__screen, colors["light_orange"], leftWheelPosAbs , cartWheelR)
         pygame.draw.circle(self.__screen, colors["light_orange"], rightWheelPosAbs, cartWheelR)
@@ -166,8 +166,8 @@ class Canvas:
         poleStart = (cartX, self.__meterStickPosY + cartWheelR + CartHeight//2)
         poleEnd   = (int(poleStart[0] + poleLength * np.sin(poleAngle)), int(poleStart[1] + poleLength * np.cos(poleAngle)))
 
-        poleStartAbs = self.__rel2abs_position(poleStart)
-        poleEndAbs   = self.__rel2abs_position(poleEnd)
+        poleStartAbs = self.__rel2abs_position(poleStart, self.__cartDisplaypos)
+        poleEndAbs   = self.__rel2abs_position(poleEnd  , self.__cartDisplaypos)
 
         pygame.draw.line(self.__screen, colors["gray"], poleStartAbs, poleEndAbs, width=10)
         pygame.draw.circle(self.__screen, colors["gray"], poleStartAbs, 4)
@@ -176,10 +176,10 @@ class Canvas:
         # Draw meter stick
         self.__draw_meter_stick()
 
-    def plot_force(self, forceHistory):
+    def plot_angle_error(self, angleErrorHistory):
 
-        # Plot the force history
-        times, forces = zip(*forceHistory) if forceHistory else ([], [])
+        # Plot the angle error history
+        pass
 
         
         
@@ -311,8 +311,7 @@ def draw_static_screen(screen:pygame.display):
     #height = 180
     #pygame.draw.rect(screen, (255, 255, 255), (340, 200, int(height * (1 + np.sqrt(2))), height), 2)   # PID rectangle
     pygame.draw.rect(screen, (255, 255, 255), (PID_FORCE_POS[0], PID_FORCE_POS[1], DISPLAY_LENGTH, DISPLAY_HEIGHT))   # PID rectangle 2
-    pygame.draw.rect(screen, (255, 255, 255), (PID_ANGLE_POS[0], PID_ANGLE_POS[1], DISPLAY_LENGTH, DISPLAY_HEIGHT_SHORT), 2)   # PID rectangle 3
-    pygame.draw.rect(screen, (255, 255, 255), (PID_X_POS[0]    , PID_X_POS[1]    , DISPLAY_LENGTH, DISPLAY_HEIGHT_SHORT), 2)   # PID rectangle 3
+    pygame.draw.rect(screen, (255, 255, 255), (PID_ERRORS_POS[0], PID_ERRORS_POS[1], DISPLAY_LENGTH, DISPLAY_HEIGHT))   # PID rectangle 3
 
     #pygame.draw.rect(screen, (255, 255, 255), (340, 400, int(height * (1 + np.sqrt(2))), height), 2)   # State Feedback rectangle
     #pygame.draw.rect(screen, (255, 255, 255), (840, 400, int(height * (1 + 2*np.sqrt(2))), height), 2)   # State Feedback rectangle 2
