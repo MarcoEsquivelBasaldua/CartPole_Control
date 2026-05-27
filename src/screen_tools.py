@@ -27,6 +27,7 @@ DISPLAY_LENGTH = int(DISPLAY_HEIGHT * (1 + np.sqrt(2)))
 # Positions
 TITLE_POS             = (SCREEN_WIDTH // 2,  50)
 ANGLE_ERROR_TITLE_POS = (890              , 170)
+DISPLACEMENT_ERROR_TITLE_POS = (1410, 170)
 
 PID_TITLE_POS              = (170 , 290)
 PID_CANVAS_POS             = (340 , 200)
@@ -223,8 +224,51 @@ class Canvas:
                 point2 = self.__rel2abs_position((x2, y2), self.__angleErrorDisplayPos)
 
                 pygame.draw.line(self.__screen, colors["orange"], point1, point2, width=2)
-        
-        
+
+    def plot_displacement_error(self, displacementErrorHistory):
+        """
+        Plots the displacement error history on the canvas. The displacement error is expected to be in meters, and the plot is scaled to fit within the canvas area designated for displacement error display.
+        Args:
+            displacementErrorHistory (list): A list of displacement error values (in meters) to be plotted over time.
+        """        # Draw min and max lines
+        maxError = MAX_CART_DISPLACEMENT
+        minError = -maxError
+        errorRange = maxError - minError
+        lineColor = colors["gray"]
+        lineWidth = 2
+
+        UpperLimitText = Text(self.__screen, self.__rel2abs_position((20, 160), self.__displacementErrorDisplayPos), 25, colors["black"])
+        UpperLimitText.draw(f"{MAX_CART_DISPLACEMENT} m")
+        LowerLimitText = Text(self.__screen, self.__rel2abs_position((20, 20), self.__displacementErrorDisplayPos), 25, colors["black"])
+        LowerLimitText.draw(f"{-MAX_CART_DISPLACEMENT} m")
+
+        upperLineErrorStart = self.__rel2abs_position((0, 170), self.__displacementErrorDisplayPos)
+        upperLineErrorEnd   = self.__rel2abs_position((DISPLAY_LENGTH, 170), self.__displacementErrorDisplayPos)
+        middleLineErrorStart = self.__rel2abs_position((0, 90), self.__displacementErrorDisplayPos)
+        middleLineErrorEnd   = self.__rel2abs_position((DISPLAY_LENGTH, 90), self.__displacementErrorDisplayPos)
+        lowerLineErrorStart = self.__rel2abs_position((0, 10), self.__displacementErrorDisplayPos)
+        lowerLineErrorEnd   = self.__rel2abs_position((DISPLAY_LENGTH, 10), self.__displacementErrorDisplayPos)
+
+        pygame.draw.line(self.__screen, lineColor, upperLineErrorStart, upperLineErrorEnd, width=lineWidth)
+        pygame.draw.line(self.__screen, lineColor, middleLineErrorStart, middleLineErrorEnd, width=lineWidth)
+        pygame.draw.line(self.__screen, lineColor, lowerLineErrorStart, lowerLineErrorEnd, width=lineWidth)
+
+        if len(displacementErrorHistory) > 1:
+            for i in range(1, len(displacementErrorHistory)):
+                error1 = displacementErrorHistory[i-1]
+                error2 = displacementErrorHistory[i]
+
+                x1 = (i-1) * DISPLAY_LENGTH / len(displacementErrorHistory)
+                y1 = 170 - ((error1 - minError) / errorRange) * 160
+                y1 = max(10, min(170, y1))  # Clamp y1 to be within the display area
+                x2 = i * DISPLAY_LENGTH / len(displacementErrorHistory)
+                y2 = 170 - ((error2 - minError) / errorRange) * 160
+                y2 = max(10, min(170, y2))  # Clamp y2 to be within the display area
+
+                point1 = self.__rel2abs_position((x1, y1), self.__displacementErrorDisplayPos)
+                point2 = self.__rel2abs_position((x2, y2), self.__displacementErrorDisplayPos)
+
+                pygame.draw.line(self.__screen, colors["orange"], point1, point2, width=2)
 
 class Text:
     """
@@ -334,6 +378,7 @@ def draw_static_screen(screen:pygame.display):
     titleDisplay              = Text(screen, TITLE_POS         , TITLE_SIZE   , colors["orange"])
     setPointText              = Text(screen, SLIDER_TITLE_POS  , SUBTITLE_SIZE, colors["orange"])
     angleErrorTitleDisplay    = Text(screen, ANGLE_ERROR_TITLE_POS, SUBTITLE_SIZE, colors["orange"])
+    displacementErrorTitleDisplay = Text(screen, DISPLACEMENT_ERROR_TITLE_POS, SUBTITLE_SIZE, colors["orange"])
     pidTitleDisplay           = Text(screen, PID_TITLE_POS     , SUBTITLE_SIZE, colors["orange"])
     stateFeedBackTitleDisplay = Text(screen, STATE_FEEDBACK_POS, SUBTITLE_SIZE, colors["orange"])
     lqrTitleDisplay           = Text(screen, LQR_TITLE_POS     , SUBTITLE_SIZE, colors["orange"])
@@ -343,6 +388,7 @@ def draw_static_screen(screen:pygame.display):
     titleDisplay.draw("Cart Pole - Control")
     pidTitleDisplay.draw("PID")
     angleErrorTitleDisplay.draw("Angle Error")
+    displacementErrorTitleDisplay.draw("Displacement Error")
     stateFeedBackTitleDisplay.draw("State Feedback")
     lqrTitleDisplay.draw("LQR")
     mpcTitleDisplay.draw("MPC")
