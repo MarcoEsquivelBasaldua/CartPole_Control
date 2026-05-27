@@ -121,7 +121,7 @@ class CartPole:
         Applies the controller to compute the force based on the current state and set point, then updates the state.
         """
         if self.controller is not None:
-            force = self.controller.compute_control(set_point, self.get_current_state(), dt)
+            force, errorTheta, errorX = self.controller.compute_control(set_point, self.get_current_state(), dt)
             self.__update_state(force, dt)
         else:
             constant_force = 1.0  # No control input
@@ -131,10 +131,10 @@ class CartPole:
         self.forceHistory.append(force)
         self.forceHistory = self.forceHistory[-100:]  # Keep only the last 100 entries for plotting
         
-        self.angleErrorHistory.append(-self.poleAngle)  # Desired angle is 0 (upright)
+        self.angleErrorHistory.append(errorTheta)  # Desired angle is 0 (upright)
         self.angleErrorHistory = self.angleErrorHistory[-100:]  # Keep only the last 100 entries for plotting
 
-        self.displacementErrorHistory.append(set_point - self.cartX)  # Track displacement error
+        self.displacementErrorHistory.append(errorX)  # Track displacement error
         self.displacementErrorHistory = self.displacementErrorHistory[-100:]  # Keep only the last 100 entries for plotting
 
     def get_force_history(self):

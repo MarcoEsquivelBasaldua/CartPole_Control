@@ -50,7 +50,7 @@ class PIDController:
         # Compute control signal (force)
         controlSignal = - self.KpTheta * errorTheta - self.KiTheta * self.integralTheta - self.KdTheta * derivativeTheta
 
-        return controlSignal
+        return controlSignal, errorTheta, errorX
     
 
 

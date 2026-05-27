@@ -60,6 +60,8 @@ if __name__ == "__main__":
 
         # Apply controllers and update states
         pidCartPole.apply_controller(setPointSlider.get_set_point(), dt)
+        pidCanvas.plot_angle_error(pidCartPole.get_angle_error_history())
+        #pidCanvas.plot_force(pidCartPole.get_force_history())
         #print(f"PID Cart Pole State: {pidCartPole.get_current_state().flatten()}")
 
 
