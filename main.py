@@ -9,8 +9,11 @@ import screen_tools
 if __name__ == "__main__":
     pygame.init()
 
+    # Controllers
+    piController = controllers.PIDController()
+
     # CartPoles
-    pidCartPole           = cart_pole.CartPole()
+    pidCartPole           = cart_pole.CartPole(piController)
     stateFeedbackCartPole = cart_pole.CartPole()
     lqrCartPole           = cart_pole.CartPole()
     mpcCartPole           = cart_pole.CartPole()
@@ -53,12 +56,12 @@ if __name__ == "__main__":
 
         # Draw slider set point
         setPointSlider.draw()
-        #print(setPointSlider.get_set_point())
 
 
         # Apply controllers and update states
         pidCartPole.apply_controller(setPointSlider.get_set_point(), dt)
-
+        pidCanvas.plot_angle_error(pidCartPole.get_angle_error_history())
+        pidCanvas.plot_displacement_error(pidCartPole.get_displacement_error_history())
 
 
         
