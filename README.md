@@ -95,18 +95,6 @@ The control in this case is achieved via a cascade control structure, where we h
 The PID controller for the inner loop is designed as follows:
 
 $$
-    F = - K_{p,\theta} {\theta}_e(t) - K_{i,\theta} \int {\theta}_e(t) dt - K_{d,\theta} \dot{\theta}_e(t)
-$$
-
-Where 
-
-$$
-    {\theta}_e(t) = \theta_r(t) - \theta(t)
-$$
-
-The PID controller for the outer loop is designed as follows:
-
-$$
     \theta_r(t) = K_{p,x} x_e(t) + K_{i,x} \int x_e(t) dt + K_{d,x} \dot{x}_e(t)
 $$
 
@@ -114,5 +102,17 @@ Where
 
 $$
     x_e(t) = x_r(t) - x(t)
+$$
+
+The PID controller for the outer loop is designed as follows:
+
+$$
+    F = - K_{p,\theta} {\theta}_e(t) - K_{i,\theta} \int {\theta}_e(t) dt - K_{d,\theta} \dot{\theta}_e(t)
+$$
+
+Where 
+
+$$
+    {\theta}_e(t) = \theta_r(t) - \theta(t)
 $$
     
