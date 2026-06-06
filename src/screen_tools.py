@@ -34,10 +34,10 @@ PID_CANVAS_POS             = (340 , 200)
 PID_ANGLE_ERROR_POS        = (790 , 200)
 PID_DISPLACEMENT_ERROR_POS = (1240, 200)
 
-STATE_FEEDBACK_POS        = (170, 490)
+LQR_POS        = (170, 490)
 LYAPUNOV_TITLE_POS             = (170, 690)
 MPC_TITLE_POS             = (170, 890)
-STATE_FEEDBACK_CANVAS_POS = (340, 400)
+LQR_CANVAS_POS = (340, 400)
 LYAPUNOV_CANVAS_POS            = (340, 600)
 MPC_CANVAS_POS            = (340, 800)
 
@@ -371,7 +371,7 @@ def draw_static_screen(screen:pygame.display):
     
     # Fill the areas below the rectangles with black
     pygame.draw.rect(screen, colors["black"], (PID_CANVAS_POS[0]           , PID_CANVAS_POS[1]            + DISPLAY_HEIGHT, DISPLAY_LENGTH, 20))  # Below PID
-    pygame.draw.rect(screen, colors["black"], (STATE_FEEDBACK_CANVAS_POS[0], STATE_FEEDBACK_CANVAS_POS[1] + DISPLAY_HEIGHT, DISPLAY_LENGTH, 20))  # Below State Feedback
+    pygame.draw.rect(screen, colors["black"], (LQR_CANVAS_POS[0], LQR_CANVAS_POS[1] + DISPLAY_HEIGHT, DISPLAY_LENGTH, 20))  # Below State Feedback
     pygame.draw.rect(screen, colors["black"], (LYAPUNOV_CANVAS_POS[0]           , LYAPUNOV_CANVAS_POS[1]            + DISPLAY_HEIGHT, DISPLAY_LENGTH, 20))  # Below Lyapunov
     pygame.draw.rect(screen, colors["black"], (MPC_CANVAS_POS[0]           , MPC_CANVAS_POS[1]            + DISPLAY_HEIGHT, DISPLAY_LENGTH, 20))  # Below MPC
 
@@ -381,7 +381,7 @@ def draw_static_screen(screen:pygame.display):
     angleErrorTitleDisplay    = Text(screen, ANGLE_ERROR_TITLE_POS, SUBTITLE_SIZE, colors["orange"])
     displacementErrorTitleDisplay = Text(screen, DISPLACEMENT_ERROR_TITLE_POS, SUBTITLE_SIZE, colors["orange"])
     pidTitleDisplay           = Text(screen, PID_TITLE_POS     , SUBTITLE_SIZE, colors["orange"])
-    stateFeedBackTitleDisplay = Text(screen, STATE_FEEDBACK_POS, SUBTITLE_SIZE, colors["orange"])
+    stateFeedBackTitleDisplay = Text(screen, LQR_POS, SUBTITLE_SIZE, colors["orange"])
     lyapunovTitleDisplay      = Text(screen, LYAPUNOV_TITLE_POS, SUBTITLE_SIZE, colors["orange"])
     mpcTitleDisplay           = Text(screen, MPC_TITLE_POS     , SUBTITLE_SIZE, colors["orange"])
 
@@ -390,7 +390,7 @@ def draw_static_screen(screen:pygame.display):
     pidTitleDisplay.draw("PID")
     angleErrorTitleDisplay.draw("Angle Error")
     displacementErrorTitleDisplay.draw("Displacement Error")
-    stateFeedBackTitleDisplay.draw("State Feedback")
+    stateFeedBackTitleDisplay.draw("LQR")
     lyapunovTitleDisplay.draw("Lyapunov Method")
     mpcTitleDisplay.draw("MPC")
     setPointText.draw("Set Point")
@@ -399,8 +399,8 @@ def draw_static_screen(screen:pygame.display):
     pygame.draw.rect(screen, (255, 255, 255), (PID_ANGLE_ERROR_POS[0], PID_ANGLE_ERROR_POS[1], DISPLAY_LENGTH, DISPLAY_HEIGHT))
     pygame.draw.rect(screen, (255, 255, 255), (PID_DISPLACEMENT_ERROR_POS[0], PID_DISPLACEMENT_ERROR_POS[1], DISPLAY_LENGTH, DISPLAY_HEIGHT))
 
-    #pygame.draw.rect(screen, (255, 255, 255), (340, 400, int(height * (1 + np.sqrt(2))), height), 2)   # State Feedback rectangle
-    #pygame.draw.rect(screen, (255, 255, 255), (840, 400, int(height * (1 + 2*np.sqrt(2))), height), 2)   # State Feedback rectangle 2
+    #pygame.draw.rect(screen, (255, 255, 255), (340, 400, int(height * (1 + np.sqrt(2))), height), 2)   # LQR rectangle
+    #pygame.draw.rect(screen, (255, 255, 255), (840, 400, int(height * (1 + 2*np.sqrt(2))), height), 2)   # LQR rectangle 2
 
     #pygame.draw.rect(screen, (255, 255, 255), (340, 600, int(height * (1 + np.sqrt(2))), height), 2)   # Lyapunov rectangle
     #pygame.draw.rect(screen, (255, 255, 255), (840, 600, int(height * (1 + 2*np.sqrt(2))), height), 2)   # Lyapunov rectangle 2
