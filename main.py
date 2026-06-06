@@ -10,11 +10,12 @@ if __name__ == "__main__":
     pygame.init()
 
     # Controllers
-    piController = controllers.PIDController()
+    pidController = controllers.PIDController()
+    lqrController = controllers.LQRController()
 
     # CartPoles
-    pidCartPole      = cart_pole.CartPole(piController)
-    lqrCartPole      = cart_pole.CartPole()
+    pidCartPole      = cart_pole.CartPole(pidController)
+    lqrCartPole      = cart_pole.CartPole(lqrController)
     lyapunovCartPole = cart_pole.CartPole()
     mpcCartPole      = cart_pole.CartPole()
 
@@ -59,9 +60,16 @@ if __name__ == "__main__":
 
 
         # Apply controllers and update states
+
+        # PID Controller
         pidCartPole.apply_controller(setPointSlider.get_set_point(), dt)
         pidCanvas.plot_angle_error(pidCartPole.get_angle_error_history())
         pidCanvas.plot_displacement_error(pidCartPole.get_displacement_error_history())
+
+        # LQR Controller
+        lqrCartPole.apply_controller(setPointSlider.get_set_point(), dt, linearize=True)
+        lqrCanvas.plot_angle_error(lqrCartPole.get_angle_error_history())
+        lqrCanvas.plot_displacement_error(lqrCartPole.get_displacement_error_history())
 
 
         
