@@ -83,7 +83,7 @@ $$
 ## Control Objective
 The control objective for the cart-pole system is to design a controller that can stabilize the pole in the upright position ($\theta = 0$) while keeping the cart at a desired position ($x = x_{desired}$). This can be achieved by applying an appropriate force $F$ to the cart based on the current state of the system.
 
-In this project, we will explore various control strategies, such as PID control, input-output feedback linearization, Lyapunov direct method, and model predictive control, to achieve the desired control objective. Each of these methods will be implemented and shown side by side to compare their performance in stabilizing the cart-pole system.
+In this project, we will explore various control strategies, such as PID control, Linear Quadratic Regulator (LQR), Lyapunov direct method, and model predictive control, to achieve the desired control objective. Each of these methods will be implemented and shown side by side to compare their performance in stabilizing the cart-pole system.
 
 ## PID Control
 PID (Proportional-Integral-Derivative) control is a widely used control strategy that combines three terms to compute the control input: the proportional term, which is based on the current error; the integral term, which is based on the accumulated error over time; and the derivative term, which is based on the rate of change of the error.
@@ -115,4 +115,25 @@ Where
 $$
     x_e(t) = x_r(t) - x(t)
 $$
+
+## LQR Control
+The Linear Quadratic Regulator (LQR) is an optimal control strategy that computes the control input by minimizing a quadratic cost function that penalizes deviations from the desired state and the control effort. The LQR controller is designed based on the linearized dynamics of the system around the equilibrium point. The cost function for the LQR controller is given by:
+
+$$
+    J = \int_0^\infty \left( \mathbf{x}^T Q \mathbf{x} + u^T R u \right) dt
+$$
+
+Where $Q$ is the state cost matrix that penalizes deviations from the desired state, and $R$ is the control cost matrix that penalizes the control effort. The LQR controller computes the optimal control input as:
+
+$$
+    u = -K \mathbf{x}
+$$
+
+Where $K$ is the LQR gain matrix that can be computed by solving the Continuous-time Algebraic Riccati Equation (CARE):
+
+$$
+    A^T P + P A - P B R^{-1} B^T P + Q = 0
+$$
+
+Where $P$ is the optimal state cost matrix. The LQR controller is designed to stabilize the system while minimizing the cost function, which leads to a trade-off between performance and control effort.
     

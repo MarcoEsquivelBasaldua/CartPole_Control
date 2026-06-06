@@ -10,20 +10,21 @@ if __name__ == "__main__":
     pygame.init()
 
     # Controllers
-    piController = controllers.PIDController()
+    pidController = controllers.PIDController()
+    lqrController = controllers.LQRController()
 
     # CartPoles
-    pidCartPole           = cart_pole.CartPole(piController)
-    stateFeedbackCartPole = cart_pole.CartPole()
-    lqrCartPole           = cart_pole.CartPole()
-    mpcCartPole           = cart_pole.CartPole()
+    pidCartPole      = cart_pole.CartPole(pidController)
+    lqrCartPole      = cart_pole.CartPole(lqrController)
+    lyapunovCartPole = cart_pole.CartPole()
+    mpcCartPole      = cart_pole.CartPole()
 
     # Canvas
-    screen              = pygame.display.set_mode((screen_tools.SCREEN_WIDTH, screen_tools.SCREEN_HEIGHT))
-    pidCanvas           = screen_tools.Canvas(screen, screen_tools.PID_CANVAS_POS           , pidCartPole          )
-    stateFeedbackCanvas = screen_tools.Canvas(screen, screen_tools.STATE_FEEDBACK_CANVAS_POS, stateFeedbackCartPole)
-    lqrCanvas           = screen_tools.Canvas(screen, screen_tools.LQR_CANVAS_POS           , lqrCartPole          )
-    mpcCanvas           = screen_tools.Canvas(screen, screen_tools.MPC_CANVAS_POS           , mpcCartPole          )
+    screen         = pygame.display.set_mode((screen_tools.SCREEN_WIDTH, screen_tools.SCREEN_HEIGHT))
+    pidCanvas      = screen_tools.Canvas(screen, screen_tools.PID_CANVAS_POS     , pidCartPole     )
+    lqrCanvas      = screen_tools.Canvas(screen, screen_tools.LQR_CANVAS_POS     , lqrCartPole     )
+    lyapunovCanvas = screen_tools.Canvas(screen, screen_tools.LYAPUNOV_CANVAS_POS, lyapunovCartPole)
+    mpcCanvas      = screen_tools.Canvas(screen, screen_tools.MPC_CANVAS_POS     , mpcCartPole     )
 
     # Displays
     pygame.display.set_caption("Cart Pole Control")
@@ -47,8 +48,8 @@ if __name__ == "__main__":
 
         # Draw cart animations first
         pidCanvas.draw_cart()
-        stateFeedbackCanvas.draw_cart()
         lqrCanvas.draw_cart()
+        lyapunovCanvas.draw_cart()
         mpcCanvas.draw_cart()
 
         # Fill screen with static elements (titles, labels, etc.)
@@ -59,9 +60,16 @@ if __name__ == "__main__":
 
 
         # Apply controllers and update states
+
+        # PID Controller
         pidCartPole.apply_controller(setPointSlider.get_set_point(), dt)
         pidCanvas.plot_angle_error(pidCartPole.get_angle_error_history())
         pidCanvas.plot_displacement_error(pidCartPole.get_displacement_error_history())
+
+        # LQR Controller
+        lqrCartPole.apply_controller(setPointSlider.get_set_point(), dt, linearize=True)
+        lqrCanvas.plot_angle_error(lqrCartPole.get_angle_error_history())
+        lqrCanvas.plot_displacement_error(lqrCartPole.get_displacement_error_history())
 
 
         
