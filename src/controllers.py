@@ -61,7 +61,14 @@ class LQRController:
     A placeholder for the LQR controller. The actual implementation will compute the optimal control signal based on the linearized system dynamics and a cost function.
     """
     def __init__(self):
-        self.K = None  # Placeholder for the LQR gain matrix
+        """
+        Initializes the LQR controller with default cost matrices.
+        """
+        self.Q_x        = 20.0
+        self.Q_theta    = 200.0
+        self.Q_xdot     = 1.0
+        self.Q_thetadot = 10.0
+        self.R          = 1.0
 
     def compute_control(self, setpoint: float, currentState: np.ndarray, dt: float, A: np.ndarray, B: np.ndarray) -> float:
         """Computes the control signal (force) based on the current state of the system and a desired setpoint using LQR control.
@@ -83,17 +90,20 @@ class LQRController:
         x[0, 0] -= setpoint  # Shift the cart position to be relative to the setpoint
 
         # Define the cost matrices for LQR
-        Q = np.diag([20.0, 200.0, 1.0, 10.0])  # State cost matrix (penalize pole angle more than cart position)
-        R = np.array([[1.0]])                  # Control cost matrix
+        Q = np.diag([self.Q_x,
+                     self.Q_theta,
+                     self.Q_xdot,
+                     self.Q_thetadot])  # State cost matrix (penalize pole angle more than cart position)
+        R = np.array([[self.R]])        # Control cost matrix
 
         # Solve the Continuous-time Algebraic Riccati Equation (CARE) to find the optimal state cost matrix P
         P = solve_continuous_are(A, B, Q, R)
 
         # Compute the LQR gain matrix K
-        self.K = np.linalg.inv(R) @ B.T @ P
+        K = np.linalg.inv(R) @ B.T @ P
 
         # Compute the control signal using the LQR gain
-        controlSignal = -self.K @ x
+        controlSignal = -K @ x
 
         return controlSignal[0, 0], angle_difference(0.0, currentState[1, 0]), setpoint - currentState[0, 0]
         
