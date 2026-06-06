@@ -72,3 +72,47 @@ $$
     0 \\
     \mathbf{M}^{-1}(x, \theta)\mathbf{B} \end{bmatrix}u
 $$
+
+Since we only see the position of the cart and the angle of the pole, we can define the output vector $\mathbf{y}$ as:
+
+$$
+\mathbf{y} = \left[\begin{matrix} 1 & 0 & 0 & 0 \\ 
+0 & 1 & 0 & 0 \end{matrix}\right]\mathbf{x}
+$$
+
+## Control Objective
+The control objective for the cart-pole system is to design a controller that can stabilize the pole in the upright position ($\theta = 0$) while keeping the cart at a desired position ($x = x_{desired}$). This can be achieved by applying an appropriate force $F$ to the cart based on the current state of the system.
+
+In this project, we will explore various control strategies, such as PID control, input-output feedback linearization, Lyapunov direct method, and model predictive control, to achieve the desired control objective. Each of these methods will be implemented and shown side by side to compare their performance in stabilizing the cart-pole system.
+
+## PID Control
+PID (Proportional-Integral-Derivative) control is a widely used control strategy that combines three terms to compute the control input: the proportional term, which is based on the current error; the integral term, which is based on the accumulated error over time; and the derivative term, which is based on the rate of change of the error.
+
+The current system is an underactuated system, meaning that we have fewer control inputs than the number of states. In this case, we have only one control input (the force $F$ applied to the cart) to control both the position of the cart and the angle of the pole. This makes it challenging to design a PID controller that can effectively stabilize the system.
+
+The control in this case is achieved via a cascade control structure, where we have an inner loop that controls the angle of the pole and an outer loop that controls the position of the cart. The inner loop is designed to stabilize the pole in the upright position, while the outer loop is designed to keep the cart at the desired position.
+
+The PID controller for the inner loop is designed as follows:
+
+$$
+    F = - K_{p,\theta} {\theta}_e(t) - K_{i,\theta} \int {\theta}_e(t) dt - K_{d,\theta} \dot{\theta}_e(t)
+$$
+
+Where 
+
+$$
+    {\theta}_e(t) = \theta_r(t) - \theta(t)
+$$
+
+The PID controller for the outer loop is designed as follows:
+
+$$
+    \theta_r(t) = K_{p,x} x_e(t) + K_{i,x} \int x_e(t) dt + K_{d,x} \dot{x}_e(t)
+$$
+
+Where
+
+$$
+    x_e(t) = x_r(t) - x(t)
+$$
+    
