@@ -45,6 +45,9 @@ class CartPole:
         self.angleErrorHistory        = []
         self.displacementErrorHistory = []
 
+        # Linearize the system to get A and B matrices for LQR controller
+        self.A, self.B = self.linearize()
+
     def reset(self):
         """
         Resets the CartPole system to its initial conditions.
@@ -116,12 +119,15 @@ class CartPole:
 
         #print(f"Cart X: {self.cartX:.2f}, Cart Xdot: {self.cartXdot:.2f}, Pole Angle: {np.degrees(self.poleAngle):.2f} degrees, Pole Angledot: {np.degrees(self.poleAngledot):.2f} degrees/s")
 
-    def apply_controller(self, set_point: float, dt: float):
+    def apply_controller(self, set_point: float, dt: float, linearize=False):
         """
         Applies the controller to compute the force based on the current state and set point, then updates the state.
         """
         if self.controller is not None:
-            force, errorTheta, errorX = self.controller.compute_control(set_point, self.get_current_state(), dt)
+            if linearize:
+                force, errorTheta, errorX = self.controller.compute_control(set_point, self.get_current_state(), dt, self.A, self.B)
+            else:
+                force, errorTheta, errorX = self.controller.compute_control(set_point, self.get_current_state(), dt)
             self.__update_state(force, dt)
         else:
             constant_force = 1.0  # No control input
@@ -136,6 +142,27 @@ class CartPole:
 
         self.displacementErrorHistory.append(errorX)  # Track displacement error
         self.displacementErrorHistory = self.displacementErrorHistory[-100:]  # Keep only the last 100 entries for plotting
+
+    def linearize(self):
+        """
+        Linearizes the equations of motion around the upright position (theta = 0) and cart position (x = 0) and returns the A and B matrices for state-space representation.
+        """
+        m_c = self.cartMass
+        m_p = self.poleMass
+        L   = self.poleLength
+        g   = 9.81
+        
+        A = np.array([[0, 0, 1, 0],
+                      [0, 0, 0, 1],
+                      [0, (m_p * g) / m_c, 0, 0],
+                      [0, (m_c + m_p) * g / (m_c * L), 0, 0]])
+        
+        B = np.array([[0],
+                      [0],
+                      [1 / m_c],
+                      [-1 / (m_c * L)]])
+        
+        return A, B
 
     def get_force_history(self):
         """
