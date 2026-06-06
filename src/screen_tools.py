@@ -35,6 +35,12 @@ PID_ANGLE_ERROR_POS        = (790 , 200)
 PID_DISPLACEMENT_ERROR_POS = (1240, 200)
 
 LQR_TITLE_POS       = (170, 490)
+LQR_CANVAS_POS      = (340, 400)
+LQR_ANGLE_ERROR_POS = (790, 400)
+LQR_DISPLACEMENT_ERROR_POS = (1240, 400)
+
+
+
 LYAPUNOV_TITLE_POS  = (170, 690)
 MPC_TITLE_POS       = (170, 890)
 LQR_CANVAS_POS      = (340, 400)
@@ -238,8 +244,8 @@ class Canvas:
         lineColor  = colors["gray"]
         lineWidth  = 2
 
-        UpperLimitText = Text(self.__screen, self.__rel2abs_position((20, 160), self.__displacementErrorDisplayPos), 25, colors["black"])
-        LowerLimitText = Text(self.__screen, self.__rel2abs_position((20,  20), self.__displacementErrorDisplayPos), 25, colors["black"])
+        UpperLimitText = Text(self.__screen, self.__rel2abs_position((30, 160), self.__displacementErrorDisplayPos), 25, colors["black"])
+        LowerLimitText = Text(self.__screen, self.__rel2abs_position((30,  20), self.__displacementErrorDisplayPos), 25, colors["black"])
         UpperLimitText.draw(f"{MAX_CART_DISPLACEMENT} m")
         LowerLimitText.draw(f"{-MAX_CART_DISPLACEMENT} m")
 
@@ -400,8 +406,8 @@ def draw_static_screen(screen:pygame.display):
     pygame.draw.rect(screen, (255, 255, 255), (PID_ANGLE_ERROR_POS[0], PID_ANGLE_ERROR_POS[1], DISPLAY_LENGTH, DISPLAY_HEIGHT))
     pygame.draw.rect(screen, (255, 255, 255), (PID_DISPLACEMENT_ERROR_POS[0], PID_DISPLACEMENT_ERROR_POS[1], DISPLAY_LENGTH, DISPLAY_HEIGHT))
 
-    #pygame.draw.rect(screen, (255, 255, 255), (340, 400, int(height * (1 + np.sqrt(2))), height), 2)   # LQR rectangle
-    #pygame.draw.rect(screen, (255, 255, 255), (840, 400, int(height * (1 + 2*np.sqrt(2))), height), 2)   # LQR rectangle 2
+    pygame.draw.rect(screen, (255, 255, 255), (LQR_ANGLE_ERROR_POS[0], LQR_ANGLE_ERROR_POS[1], DISPLAY_LENGTH, DISPLAY_HEIGHT))
+    pygame.draw.rect(screen, (255, 255, 255), (LQR_DISPLACEMENT_ERROR_POS[0], LQR_DISPLACEMENT_ERROR_POS[1], DISPLAY_LENGTH, DISPLAY_HEIGHT))
 
     #pygame.draw.rect(screen, (255, 255, 255), (340, 600, int(height * (1 + np.sqrt(2))), height), 2)   # Lyapunov rectangle
     #pygame.draw.rect(screen, (255, 255, 255), (840, 600, int(height * (1 + 2*np.sqrt(2))), height), 2)   # Lyapunov rectangle 2
