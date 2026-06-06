@@ -83,7 +83,7 @@ $$
 ## Control Objective
 The control objective for the cart-pole system is to design a controller that can stabilize the pole in the upright position ($\theta = 0$) while keeping the cart at a desired position ($x = x_{desired}$). This can be achieved by applying an appropriate force $F$ to the cart based on the current state of the system.
 
-In this project, we will explore various control strategies, such as PID control, input-output feedback linearization, Lyapunov direct method, and model predictive control, to achieve the desired control objective. Each of these methods will be implemented and shown side by side to compare their performance in stabilizing the cart-pole system.
+In this project, we will explore various control strategies, such as PID control, LQR, Lyapunov direct method, and model predictive control, to achieve the desired control objective. Each of these methods will be implemented and shown side by side to compare their performance in stabilizing the cart-pole system.
 
 ## PID Control
 PID (Proportional-Integral-Derivative) control is a widely used control strategy that combines three terms to compute the control input: the proportional term, which is based on the current error; the integral term, which is based on the accumulated error over time; and the derivative term, which is based on the rate of change of the error.
