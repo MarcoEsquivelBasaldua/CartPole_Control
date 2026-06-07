@@ -1,4 +1,4 @@
-# CartPole Control
+# CartPole_Control
 
 ## System Description
 The cart-pole system is a classic problem in control theory and robotics. It consists of a cart that can move horizontally along a track and a pole (or pendulum) that is attached to the cart. The objective is to apply a force to the cart in such a way that the pole remains balanced in the upright position.
@@ -39,12 +39,12 @@ The state-space representation of the system can be obtain from the formulation 
 $$
     \mathbf{M}(x, \theta)\left[\begin{matrix} \ddot{x} \\ 
     \ddot{\theta} \end{matrix}\right] + \mathbf{C}(x, \theta, \dot{x}, \dot{\theta})\left[\begin{matrix} \dot{x} \\ 
-    \dot{\theta} \end{matrix}\right] + \mathbf{G}(x, \theta) = \mathbf{G}u
+    \dot{\theta} \end{matrix}\right] + \mathbf{G}(x, \theta) = \mathbf{B}u
 $$
 
-Where $\mathbf{M}(\mathbf{x})$ is the mass matrix, $\mathbf{C}(\mathbf{x}, \dot{\mathbf{x}})$ is the Coriolis and centrifugal matrix, $\mathbf{G}(\mathbf{x})$ is the gravity vector, $\mathbf{G}$ is the input matrix, and $u$ is the control input (force applied to the cart).
+Where $\mathbf{M}(\mathbf{x})$ is the mass matrix, $\mathbf{C}(\mathbf{x}, \dot{\mathbf{x}})$ is the Coriolis and centrifugal matrix, $\mathbf{G}(\mathbf{x})$ is the gravity vector, $\mathbf{B}$ is the input matrix, and $u$ is the control input (force applied to the cart).
 
-Replacing $\mathbf{M}(x, \theta)$, $\mathbf{C}(x, \theta, \dot{x}, \dot{\theta})$, $\mathbf{G}(x, \theta)$ and $\mathbf{G}$, we have
+Replacing $\mathbf{M}(x, \theta)$, $\mathbf{C}(x, \theta, \dot{x}, \dot{\theta})$, $\mathbf{G}(x, \theta)$ and $\mathbf{B}$, we have
 
 $$
     \begin{bmatrix} m_c + m_p & \frac{m_pL}{2}\cos(\theta) \\ 
@@ -70,7 +70,7 @@ $$
     -\mathbf{M}^{-1}(x, \theta)\left( \mathbf{C}(x, \theta, \dot{x}, \dot{\theta})\left[\begin{matrix} \dot{x} \\ 
     \dot{\theta} \end{matrix}\right] + \mathbf{G}(x, \theta) \right) \end{bmatrix} + \begin{bmatrix} 0 \\ 
     0 \\
-    \mathbf{M}^{-1}(x, \theta)\mathbf{G} \end{bmatrix}u
+    \mathbf{M}^{-1}(x, \theta)\mathbf{B} \end{bmatrix}u
 $$
 
 Since we only see the position of the cart and the angle of the pole, we can define the output vector $\mathbf{y}$ as:

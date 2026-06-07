@@ -94,20 +94,20 @@ class CartPole:
                       [-g * sin_theta]])
         
         # Input matrix
-        G = np.array([[force],
+        B = np.array([[force],
                       [0.0]])
         
-        return M, C, G
+        return M, C, B
     
     def __update_state(self, force: float, dt: float):
         """
         Updates the state of the CartPole system based on the applied force and time step.
         """
-        M, C, G = self.__equations_of_motion(force)
+        M, C, B = self.__equations_of_motion(force)
 
         # Create the State space representation
         M_inv    = np.linalg.inv(M)
-        stateDot = M_inv @ (G - C)
+        stateDot = M_inv @ (B - C)
         
         # Solve the state using Euler's method
         self.cartXdot     += stateDot[0, 0] * dt
