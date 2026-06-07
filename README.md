@@ -136,4 +136,24 @@ $$
 $$
 
 Where $P$ is the optimal state cost matrix. The LQR controller is designed to stabilize the system while minimizing the cost function, which leads to a trade-off between performance and control effort.
+
+In the case of the cart-pole system, we can linearize the dynamics around the equilibrium point ($x = x^r$, $\theta = 0$) to obtain the state-space representation in the form:
+
+$$
+    \dot{\mathbf{x}} = A \mathbf{x} + B u
+$$
+
+Where $A$ is the system matrix and $B$ is the input matrix (different from the original $B$ in the equations of motion). So the linearized dynamics are expressed as:
+
+$$
+    \dot{\mathbf{x}} = \begin{bmatrix} 0 & 0 & 1 & 0 \\ 
+    0 & 0 & 0 & 1 \\
+    0 & -\frac{m_p g}{m_c} & 0 & 0 \\
+    0 & \frac{(m_c + m_p)g}{m_c L} & 0 & 0 \end{bmatrix}\mathbf{x} + \begin{bmatrix} 0 \\ 
+    0 \\
+    \frac{1}{m_c} \\
+    -\frac{1}{m_c L} \end{bmatrix}u
+$$
+
+The LQR controller can then be designed by choosing appropriate values for the state cost matrix $Q$ and the control cost matrix $R$, and solving the CARE to obtain the optimal gain matrix $K$. The resulting control input will stabilize the cart-pole system while minimizing the cost function.
     
