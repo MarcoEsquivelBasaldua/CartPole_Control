@@ -32,6 +32,11 @@ if __name__ == "__main__":
     # Slider Set Point
     setPointSlider = screen_tools.SlideBar(screen)
 
+    # Reset Button
+    BUTTON_WIDTH_SMALL = 100
+    BUTTON_HEIGHT_SMALL = 50
+    RESET_BUTTON = screen_tools.Button(120, 70, BUTTON_WIDTH_SMALL, BUTTON_HEIGHT_SMALL, 'RESET', screen)
+
     # Time control
     dt = 0.01  # Time step for the simulation
 
@@ -41,6 +46,9 @@ if __name__ == "__main__":
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                wasMousePresed = True
+                RESET_BUTTON.handle_event(event)
             elif event.type == pygame.MOUSEMOTION:
                 setPointSlider.handle_event(event)
 
@@ -58,6 +66,9 @@ if __name__ == "__main__":
         # Draw slider set point
         setPointSlider.draw()
 
+        # Draw reset button
+        RESET_BUTTON.draw()
+
 
         # Apply controllers and update states
 
@@ -72,10 +83,23 @@ if __name__ == "__main__":
         lqrCanvas.plot_displacement_error(lqrCartPole.get_displacement_error_history())
 
 
+
+
+        # Reset simulations
+        if RESET_BUTTON.was_button_pressed():
+            pidCartPole.reset()
+            lqrCartPole.reset()
+            #lyapunovCartPole.reset()
+            #mpcCartPole.reset()
+
+            RESET_BUTTON.reset()  # Reset button state
+
+
         
 
 
 
+        wasMousePresed = False
         pygame.display.flip()    # Update the display
         pygame.time.delay(10)   # Delay to control frame rate
 
