@@ -12,6 +12,7 @@ INITIAL_POLE_ANGLE     = np.pi / 4.0  # 30 degrees from vertical
 INITIAL_POLE_ANGLE_VEL = 0.0
 INITIAL_POLE_ANGLE_ACC = 0.0
 MAX_CART_DISPLACEMENT  = 5.0  # meters
+MAX_FORCE              = 50.0 # Newtons
 
 # Physical parameters
 CART_MASS    = 1.0  # kg
@@ -128,6 +129,9 @@ class CartPole:
                 force, errorTheta, errorX = self.controller.compute_control(set_point, self.get_current_state(), dt, self.A, self.B)
             else:
                 force, errorTheta, errorX = self.controller.compute_control(set_point, self.get_current_state(), dt)
+
+            # Clip the force to the maximum allowed value
+            force = np.clip(force, -MAX_FORCE, MAX_FORCE)
             self.__update_state(force, dt)
         else:
             constant_force = 1.0  # No control input

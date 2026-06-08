@@ -53,6 +53,8 @@ class PIDController:
         # Compute control signal (force)
         controlSignal = - self.KpTheta * errorTheta - self.KiTheta * self.integralTheta - self.KdTheta * derivativeTheta
 
+        #print(f"PID Control Signal: {controlSignal:.4f}, Cart Position Error: {errorX:.4f}, Pole Angle Error: {errorTheta:.4f}")
+
         return controlSignal, errorTheta, errorX
     
 
@@ -104,6 +106,8 @@ class LQRController:
 
         # Compute the control signal using the LQR gain
         controlSignal = -K @ x
+
+        #print(f"LQR Control Signal: {controlSignal[0, 0]:.4f}, Cart Position Error: {x[0, 0]:.4f}, Pole Angle Error: {x[1, 0]:.4f}")
 
         return controlSignal[0, 0], angle_difference(0.0, currentState[1, 0]), setpoint - currentState[0, 0]
         
