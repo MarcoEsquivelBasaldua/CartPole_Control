@@ -87,6 +87,7 @@ if __name__ == "__main__":
 
         # Reset simulations
         if RESET_BUTTON.was_button_pressed():
+            setPointSlider.reset()  # Reset slider to initial position
             pidCartPole.reset()
             lqrCartPole.reset()
             #lyapunovCartPole.reset()

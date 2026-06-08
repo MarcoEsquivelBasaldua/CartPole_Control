@@ -367,6 +367,13 @@ class SlideBar:
             relPos = event.pos[0] - SLIDER_POS[0]
             self.__setPoint = relPos / (CART_DISP_RESOLUTION) - MAX_CART_DISPLACEMENT
 
+    def reset(self):
+        """
+        Resets the slider to its initial position and set point value.
+        """
+        self.__setPoint  = INITIAL_CART_X
+        self.__sliderPos = SLIDER_POS[0] + INITIAL_CART_X * CART_DISP_RESOLUTION + DISPLAY_LENGTH // 2
+
 
 class Button:
     def __init__(self, x, y, width, height, text, screen, wasPressed=False):
