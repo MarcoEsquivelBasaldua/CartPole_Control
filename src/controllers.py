@@ -85,6 +85,10 @@ class LQRController:
             float: The computed control signal (force) to be applied to the cart.
         """
 
+        # Errors
+        errorX = setpoint - currentState[0, 0] # Cart position error
+        errorTheta = angle_difference(0.0, currentState[1, 0])  # Pole angle error (desired angle is 0 for upright)
+
         # Define the state vector
         x = currentState
 
@@ -109,8 +113,7 @@ class LQRController:
 
         #print(f"LQR Control Signal: {controlSignal[0, 0]:.4f}, Cart Position Error: {x[0, 0]:.4f}, Pole Angle Error: {x[1, 0]:.4f}")
 
-        return controlSignal[0, 0], angle_difference(0.0, currentState[1, 0]), setpoint - currentState[0, 0]
-        
+        return controlSignal[0, 0], errorTheta, errorX
 
 def wrap_to_pi(angle):
     """
