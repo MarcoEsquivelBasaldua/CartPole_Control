@@ -46,6 +46,10 @@ class CartPole:
         self.angleErrorHistory        = []
         self.displacementErrorHistory = []
 
+        # Mass matrix constant entries (diagonal entries)
+        self.M11 = self.cartMass + self.poleMass
+        self.M22 = (2.0 * self.poleLength) / 3.0
+
         # Linearize the system to get A and B matrices for LQR controller
         self.A, self.B = self.linearize()
 
@@ -87,9 +91,14 @@ class CartPole:
         mpl_2     = (m_p * L) / 2.0
 
         # Mass matrix
-        M = np.array([[m_c + m_p, mpl_2 * cos_theta],
-                      [cos_theta, 2.0 * L / 3.0]])
+        M = np.array([[self.M11 , mpl_2 * cos_theta],
+                      [cos_theta, self.M22         ]])
         
+        # Inverse Mass matrix
+        num = M[0, 0] * M[1, 1] - M[0, 1] * M[1, 0]
+        M_inv = np.array([[M[1, 1], -M[0, 1]],
+                          [-M[1, 0], M[0, 0]]]) / num
+
         # Coriolis and gravity vector
         C = np.array([[-mpl_2 * theta_dot**2 * sin_theta],
                       [-g * sin_theta]])
@@ -98,16 +107,15 @@ class CartPole:
         B = np.array([[force],
                       [0.0]])
         
-        return M, C, B
+        return M, M_inv, C, B
     
     def __update_state(self, force: float, dt: float):
         """
         Updates the state of the CartPole system based on the applied force and time step.
         """
-        M, C, B = self.__equations_of_motion(force)
+        M, M_inv, C, B = self.__equations_of_motion(force)
 
         # Create the State space representation
-        M_inv    = np.linalg.inv(M)
         stateDot = M_inv @ (B - C)
         
         # Solve the state using Euler's method
