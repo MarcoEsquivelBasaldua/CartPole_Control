@@ -53,7 +53,18 @@ class PIDController:
         # Compute control signal (force)
         controlSignal = - self.KpTheta * errorTheta - self.KiTheta * self.integralTheta - self.KdTheta * derivativeTheta
 
+        #print(f"PID Control Signal: {controlSignal:.4f}, Cart Position Error: {errorX:.4f}, Pole Angle Error: {errorTheta:.4f}")
+
         return controlSignal, errorTheta, errorX
+    
+    def reset(self):
+        """
+        Resets the internal state of the PID controller.
+        """
+        self.integralX      = 0.0
+        self.integralTheta  = 0.0
+        self.prevErrorX     = 0.0
+        self.prevErrorTheta = 0.0
     
 
 class LQRController:
@@ -83,6 +94,10 @@ class LQRController:
             float: The computed control signal (force) to be applied to the cart.
         """
 
+        # Errors
+        errorX = setpoint - currentState[0, 0] # Cart position error
+        errorTheta = angle_difference(0.0, currentState[1, 0])  # Pole angle error (desired angle is 0 for upright)
+
         # Define the state vector
         x = currentState
 
@@ -105,8 +120,15 @@ class LQRController:
         # Compute the control signal using the LQR gain
         controlSignal = -K @ x
 
-        return controlSignal[0, 0], angle_difference(0.0, currentState[1, 0]), setpoint - currentState[0, 0]
-        
+        #print(f"LQR Control Signal: {controlSignal[0, 0]:.4f}, Cart Position Error: {x[0, 0]:.4f}, Pole Angle Error: {x[1, 0]:.4f}")
+
+        return controlSignal[0, 0], errorTheta, errorX
+    
+    def reset(self):
+        """
+        Resets the internal state of the LQR controller if needed. For a standard LQR controller, there may not be any internal state to reset, but this method is included for consistency and future extensibility.
+        """
+        pass  # No internal state to reset for standard LQR, but this can be implemented if needed in the future
 
 def wrap_to_pi(angle):
     """

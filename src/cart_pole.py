@@ -12,6 +12,7 @@ INITIAL_POLE_ANGLE     = np.pi / 4.0  # 30 degrees from vertical
 INITIAL_POLE_ANGLE_VEL = 0.0
 INITIAL_POLE_ANGLE_ACC = 0.0
 MAX_CART_DISPLACEMENT  = 5.0  # meters
+MAX_FORCE              = 50.0 # Newtons
 
 # Physical parameters
 CART_MASS    = 1.0  # kg
@@ -45,6 +46,10 @@ class CartPole:
         self.angleErrorHistory        = []
         self.displacementErrorHistory = []
 
+        # Mass matrix constant entries (diagonal entries)
+        self.M11 = self.cartMass + self.poleMass
+        self.M22 = (2.0 * self.poleLength) / 3.0
+
         # Linearize the system to get A and B matrices for LQR controller
         self.A, self.B = self.linearize()
 
@@ -59,6 +64,12 @@ class CartPole:
         self.poleAngle     = INITIAL_POLE_ANGLE
         self.poleAngledot  = INITIAL_POLE_ANGLE_VEL
         self.poleAngleddot = INITIAL_POLE_ANGLE_ACC
+
+        self.forceHistory             = []
+        self.angleErrorHistory        = []
+        self.displacementErrorHistory = []
+
+        self.controller.reset()  # Reset the controller's internal state if it has a reset method
 
     def get_current_state(self):
         """
@@ -86,9 +97,14 @@ class CartPole:
         mpl_2     = (m_p * L) / 2.0
 
         # Mass matrix
-        M = np.array([[m_c + m_p, mpl_2 * cos_theta],
-                      [cos_theta, 2.0 * L / 3.0]])
+        M = np.array([[self.M11 , mpl_2 * cos_theta],
+                      [cos_theta, self.M22         ]])
         
+        # Inverse Mass matrix
+        num = M[0, 0] * M[1, 1] - M[0, 1] * M[1, 0]
+        M_inv = np.array([[M[1, 1], -M[0, 1]],
+                          [-M[1, 0], M[0, 0]]]) / num
+
         # Coriolis and gravity vector
         C = np.array([[-mpl_2 * theta_dot**2 * sin_theta],
                       [-g * sin_theta]])
@@ -97,16 +113,15 @@ class CartPole:
         B = np.array([[force],
                       [0.0]])
         
-        return M, C, B
+        return M, M_inv, C, B
     
     def __update_state(self, force: float, dt: float):
         """
         Updates the state of the CartPole system based on the applied force and time step.
         """
-        M, C, B = self.__equations_of_motion(force)
+        M, M_inv, C, B = self.__equations_of_motion(force)
 
         # Create the State space representation
-        M_inv    = np.linalg.inv(M)
         stateDot = M_inv @ (B - C)
         
         # Solve the state using Euler's method
@@ -128,6 +143,9 @@ class CartPole:
                 force, errorTheta, errorX = self.controller.compute_control(set_point, self.get_current_state(), dt, self.A, self.B)
             else:
                 force, errorTheta, errorX = self.controller.compute_control(set_point, self.get_current_state(), dt)
+
+            # Clip the force to the maximum allowed value
+            force = np.clip(force, -MAX_FORCE, MAX_FORCE)
             self.__update_state(force, dt)
         else:
             constant_force = 1.0  # No control input

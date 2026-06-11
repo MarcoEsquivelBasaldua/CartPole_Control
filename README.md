@@ -1,4 +1,4 @@
-# CartPole_Control
+# CartPole Control
 
 ## System Description
 The cart-pole system is a classic problem in control theory and robotics. It consists of a cart that can move horizontally along a track and a pole (or pendulum) that is attached to the cart. The objective is to apply a force to the cart in such a way that the pole remains balanced in the upright position.
