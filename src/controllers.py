@@ -57,6 +57,15 @@ class PIDController:
 
         return controlSignal, errorTheta, errorX
     
+    def reset(self):
+        """
+        Resets the internal state of the PID controller.
+        """
+        self.integralX      = 0.0
+        self.integralTheta  = 0.0
+        self.prevErrorX     = 0.0
+        self.prevErrorTheta = 0.0
+    
 
 class LQRController:
     """
@@ -114,6 +123,12 @@ class LQRController:
         #print(f"LQR Control Signal: {controlSignal[0, 0]:.4f}, Cart Position Error: {x[0, 0]:.4f}, Pole Angle Error: {x[1, 0]:.4f}")
 
         return controlSignal[0, 0], errorTheta, errorX
+    
+    def reset(self):
+        """
+        Resets the internal state of the LQR controller if needed. For a standard LQR controller, there may not be any internal state to reset, but this method is included for consistency and future extensibility.
+        """
+        pass  # No internal state to reset for standard LQR, but this can be implemented if needed in the future
 
 def wrap_to_pi(angle):
     """

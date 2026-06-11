@@ -65,6 +65,12 @@ class CartPole:
         self.poleAngledot  = INITIAL_POLE_ANGLE_VEL
         self.poleAngleddot = INITIAL_POLE_ANGLE_ACC
 
+        self.forceHistory             = []
+        self.angleErrorHistory        = []
+        self.displacementErrorHistory = []
+
+        self.controller.reset()  # Reset the controller's internal state if it has a reset method
+
     def get_current_state(self):
         """
         Returns the current state of the CartPole system as a tuple.
