@@ -34,18 +34,17 @@ PID_CANVAS_POS             = (340 , 200)
 PID_ANGLE_ERROR_POS        = (790 , 200)
 PID_DISPLACEMENT_ERROR_POS = (1240, 200)
 
-LQR_TITLE_POS       = (170, 490)
-LQR_CANVAS_POS      = (340, 400)
-LQR_ANGLE_ERROR_POS = (790, 400)
+LQR_TITLE_POS              = (170, 490)
+LQR_CANVAS_POS             = (340, 400)
+LQR_ANGLE_ERROR_POS        = (790, 400)
 LQR_DISPLACEMENT_ERROR_POS = (1240, 400)
 
 
 
-LYAPUNOV_TITLE_POS  = (170, 690)
-MPC_TITLE_POS       = (170, 890)
-LQR_CANVAS_POS      = (340, 400)
-LYAPUNOV_CANVAS_POS = (340, 600)
-MPC_CANVAS_POS      = (340, 800)
+LIE_TITLE_POS  = (170, 690)
+MPC_TITLE_POS  = (170, 890)
+LIE_CANVAS_POS = (340, 600)
+MPC_CANVAS_POS = (340, 800)
 
 # Slider Sizes and positions
 SLIDER_LENGTH    = DISPLAY_LENGTH
@@ -460,10 +459,10 @@ def draw_static_screen(screen:pygame.display):
     pygame.draw.rect(screen, colors["black"], (340 + DISPLAY_LENGTH, 0, SCREEN_WIDTH, SCREEN_HEIGHT))  # Fill the left area with black
     
     # Fill the areas below the rectangles with black
-    pygame.draw.rect(screen, colors["black"], (PID_CANVAS_POS[0]     , PID_CANVAS_POS[1]      + DISPLAY_HEIGHT, DISPLAY_LENGTH, 20))  # Below PID
-    pygame.draw.rect(screen, colors["black"], (LQR_CANVAS_POS[0]     , LQR_CANVAS_POS[1]      + DISPLAY_HEIGHT, DISPLAY_LENGTH, 20))  # Below LQR
-    pygame.draw.rect(screen, colors["black"], (LYAPUNOV_CANVAS_POS[0], LYAPUNOV_CANVAS_POS[1] + DISPLAY_HEIGHT, DISPLAY_LENGTH, 20))  # Below Lyapunov
-    pygame.draw.rect(screen, colors["black"], (MPC_CANVAS_POS[0]     , MPC_CANVAS_POS[1]      + DISPLAY_HEIGHT, DISPLAY_LENGTH, 20))  # Below MPC
+    pygame.draw.rect(screen, colors["black"], (PID_CANVAS_POS[0], PID_CANVAS_POS[1] + DISPLAY_HEIGHT, DISPLAY_LENGTH, 20))  # Below PID
+    pygame.draw.rect(screen, colors["black"], (LQR_CANVAS_POS[0], LQR_CANVAS_POS[1] + DISPLAY_HEIGHT, DISPLAY_LENGTH, 20))  # Below LQR
+    pygame.draw.rect(screen, colors["black"], (LIE_CANVAS_POS[0], LIE_CANVAS_POS[1] + DISPLAY_HEIGHT, DISPLAY_LENGTH, 20))  # Below Lie
+    pygame.draw.rect(screen, colors["black"], (MPC_CANVAS_POS[0], MPC_CANVAS_POS[1] + DISPLAY_HEIGHT, DISPLAY_LENGTH, 20))  # Below MPC
 
     # Displays
     titleDisplay                  = Text(screen, TITLE_POS                   , TITLE_SIZE   , colors["orange"])
@@ -471,10 +470,10 @@ def draw_static_screen(screen:pygame.display):
     angleErrorTitleDisplay        = Text(screen, ANGLE_ERROR_TITLE_POS       , SUBTITLE_SIZE, colors["orange"])
     displacementErrorTitleDisplay = Text(screen, DISPLACEMENT_ERROR_TITLE_POS, SUBTITLE_SIZE, colors["orange"])
 
-    pidTitleDisplay           = Text(screen, PID_TITLE_POS     , SUBTITLE_SIZE, colors["orange"])
-    lqrTitleDisplay           = Text(screen, LQR_TITLE_POS     , SUBTITLE_SIZE, colors["orange"])
-    lyapunovTitleDisplay      = Text(screen, LYAPUNOV_TITLE_POS, SUBTITLE_SIZE, colors["orange"])
-    mpcTitleDisplay           = Text(screen, MPC_TITLE_POS     , SUBTITLE_SIZE, colors["orange"])
+    pidTitleDisplay           = Text(screen, PID_TITLE_POS, SUBTITLE_SIZE, colors["orange"])
+    lqrTitleDisplay           = Text(screen, LQR_TITLE_POS, SUBTITLE_SIZE, colors["orange"])
+    lieTitleDisplay           = Text(screen, LIE_TITLE_POS, SUBTITLE_SIZE, colors["orange"])
+    mpcTitleDisplay           = Text(screen, MPC_TITLE_POS, SUBTITLE_SIZE, colors["orange"])
 
     # Draw titles
     titleDisplay.draw("Cart Pole - Control")
@@ -482,7 +481,7 @@ def draw_static_screen(screen:pygame.display):
     angleErrorTitleDisplay.draw("Angle Error")
     displacementErrorTitleDisplay.draw("Displacement Error")
     lqrTitleDisplay.draw("LQR")
-    lyapunovTitleDisplay.draw("Lyapunov Method")
+    lieTitleDisplay.draw("Lie Derivatives")
     mpcTitleDisplay.draw("MPC")
     setPointText.draw("Set Point")
 
@@ -493,8 +492,8 @@ def draw_static_screen(screen:pygame.display):
     pygame.draw.rect(screen, (255, 255, 255), (LQR_ANGLE_ERROR_POS[0], LQR_ANGLE_ERROR_POS[1], DISPLAY_LENGTH, DISPLAY_HEIGHT))
     pygame.draw.rect(screen, (255, 255, 255), (LQR_DISPLACEMENT_ERROR_POS[0], LQR_DISPLACEMENT_ERROR_POS[1], DISPLAY_LENGTH, DISPLAY_HEIGHT))
 
-    #pygame.draw.rect(screen, (255, 255, 255), (340, 600, int(height * (1 + np.sqrt(2))), height), 2)   # Lyapunov rectangle
-    #pygame.draw.rect(screen, (255, 255, 255), (840, 600, int(height * (1 + 2*np.sqrt(2))), height), 2)   # Lyapunov rectangle 2
+    #pygame.draw.rect(screen, (255, 255, 255), (340, 600, int(height * (1 + np.sqrt(2))), height), 2)   # Lie rectangle
+    #pygame.draw.rect(screen, (255, 255, 255), (840, 600, int(height * (1 + 2*np.sqrt(2))), height), 2)   # Lie rectangle 2
 
     #pygame.draw.rect(screen, (255, 255, 255), (340, 800, int(height * (1 + np.sqrt(2))), height), 2)   # MPC rectangle
     #pygame.draw.rect(screen, (255, 255, 255), (840, 800, int(height * (1 + 2*np.sqrt(2))), height), 2)   # MPC rectangle 2
