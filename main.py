@@ -16,14 +16,14 @@ if __name__ == "__main__":
     # CartPoles
     pidCartPole = cart_pole.CartPole(pidController)
     lqrCartPole = cart_pole.CartPole(lqrController)
-    lieCartPole = cart_pole.CartPole()
+    fuzzyCartPole = cart_pole.CartPole()
     mpcCartPole = cart_pole.CartPole()
 
     # Canvas
     screen    = pygame.display.set_mode((screen_tools.SCREEN_WIDTH, screen_tools.SCREEN_HEIGHT))
     pidCanvas = screen_tools.Canvas(screen, screen_tools.PID_CANVAS_POS, pidCartPole)
     lqrCanvas = screen_tools.Canvas(screen, screen_tools.LQR_CANVAS_POS, lqrCartPole)
-    lieCanvas = screen_tools.Canvas(screen, screen_tools.LIE_CANVAS_POS, lieCartPole)
+    fuzzyCanvas = screen_tools.Canvas(screen, screen_tools.FUZZY_CANVAS_POS, fuzzyCartPole)
     mpcCanvas = screen_tools.Canvas(screen, screen_tools.MPC_CANVAS_POS, mpcCartPole)
 
     # Displays
@@ -57,7 +57,7 @@ if __name__ == "__main__":
         # Draw cart animations first
         pidCanvas.draw_cart()
         lqrCanvas.draw_cart()
-        lieCanvas.draw_cart()
+        fuzzyCanvas.draw_cart()
         mpcCanvas.draw_cart()
 
         # Fill screen with static elements (titles, labels, etc.)
