@@ -1,5 +1,6 @@
 import numpy as np
 from scipy.linalg import solve_continuous_are
+from cart_pole import MAX_FORCE
 
 print("Cart Pole Controllers Imported")
 
@@ -129,6 +130,48 @@ class LQRController:
         Resets the internal state of the LQR controller if needed. For a standard LQR controller, there may not be any internal state to reset, but this method is included for consistency and future extensibility.
         """
         pass  # No internal state to reset for standard LQR, but this can be implemented if needed in the future
+
+
+class fuzzyLogicController:
+    def __init__(self):
+        self.thetaBellConsts = {'a': 0.1, 'b': 2, 'c': 20}
+
+    def compute_control(self, setpoint: float, currentState: np.ndarray, dt: float) -> float:
+        pass
+
+    def __degree_of_membership(self, signal:float, scalling = 1.0) -> tuple:
+        """
+        Computes the degree of membership for a given signal using a sigmoid function.
+        Parameters:
+            signal (float): The input signal for which to compute the membership.
+            scalling (float): A scaling factor to adjust the steepness of the sigmoid function.
+            Returns:
+            tuple: A tuple containing the positive and negative membership values.
+        """
+        positveMembership = 1.0 / (1.0 + np.e**(-scalling * signal))
+        negativeMembership = 1.0 - positveMembership
+
+        return positveMembership, negativeMembership
+
+    def __bell_membership_function(self, x, params, negative=False):
+        """
+        Bell-shaped membership function for fuzzy logic.
+        Parameters:
+            x (float): The input value.
+            params (dict): A dictionary containing the parameters of the bell curve, including 'a', 'b', and 'c'.
+                a (float): The width of the bell curve.
+                b (float): The slope of the bell curve.
+                c (float): The center of the bell curve.
+
+        Returns:
+            float: The membership value for the input x.
+        """
+        a = params['a']
+        b = params['b']
+        c = params['c'] if not negative else -params['c']  # Center can be negative for negative error
+
+        return 1 / (1 + abs((x - c) / a) ** (2 * b))
+        
 
 def wrap_to_pi(angle):
     """
