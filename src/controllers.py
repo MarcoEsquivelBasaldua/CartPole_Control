@@ -1,8 +1,9 @@
 import numpy as np
 from scipy.linalg import solve_continuous_are
-from cart_pole import MAX_FORCE
 
 print("Cart Pole Controllers Imported")
+
+MAX_FORCE = 50.0 # Newtons
 
 class PIDController:
     """
@@ -134,10 +135,28 @@ class LQRController:
 
 class fuzzyLogicController:
     def __init__(self):
-        self.thetaBellConsts = {'a': 0.1, 'b': 2, 'c': 20}
+
+        # To integrate bell membership functions
+        deltaInt = 0.1
+        samples  = int((2*MAX_FORCE)/deltaInt)
+
+        self.horVectorforce = np.linspace(-MAX_FORCE, MAX_FORCE, samples)
+
+        # Bell functions constants
+        self.thetaBellConsts = {'a': 5, 'b': 2, 'c': 20}
 
     def compute_control(self, setpoint: float, currentState: np.ndarray, dt: float) -> float:
-        pass
+        theta = currentState[1, 0]  # Pole angle
+        errorX = setpoint - currentState[0, 0] # Cart position error
+        errorTheta = angle_difference(0.0, theta)  # Pole angle error (desired angle is 0 for upright)
+
+        # Compute the degree of membership for the pole angle error
+        thetaMembership = self.__degree_of_membership(theta, scalling=10.0)
+        #print(f"Pole Angle Error: {errorTheta:.4f}, Positive Membership: {posThetaMembership:.4f}, Negative Membership: {negThetaMembership:.4f}")
+
+        self.__combined_force(thetaMembership)
+
+        return 0.0, errorTheta, errorX
 
     def __degree_of_membership(self, signal:float, scalling = 1.0) -> tuple:
         """
@@ -145,10 +164,10 @@ class fuzzyLogicController:
         Parameters:
             signal (float): The input signal for which to compute the membership.
             scalling (float): A scaling factor to adjust the steepness of the sigmoid function.
-            Returns:
+        Returns:
             tuple: A tuple containing the positive and negative membership values.
         """
-        positveMembership = 1.0 / (1.0 + np.e**(-scalling * signal))
+        positveMembership  = 1.0 / (1.0 + np.e**(-scalling * signal))
         negativeMembership = 1.0 - positveMembership
 
         return positveMembership, negativeMembership
@@ -171,6 +190,41 @@ class fuzzyLogicController:
         c = params['c'] if not negative else -params['c']  # Center can be negative for negative error
 
         return 1 / (1 + abs((x - c) / a) ** (2 * b))
+    
+    def __combined_force(self, thetaDegs):
+
+        # Bell equiation functions
+        posThetaBell = self.__bell_membership_function(self.horVectorforce, self.thetaBellConsts)
+        negThetaBell = self.__bell_membership_function(self.horVectorforce, self.thetaBellConsts, negative=True)
+
+        # Positive memberships
+        posThetaDeg = thetaDegs[0]
+        posThetaVals = np.minimum(posThetaBell, posThetaDeg)
+
+        # Negative memberships
+        negThetaDeg = thetaDegs[1]
+        negThetaVals = np.minimum(negThetaBell, negThetaDeg)
+
+        # Combined memberships
+        thetaVals = np.maximum(negThetaVals, posThetaVals)
+
+        
+        
+        
+        import matplotlib.pyplot as plt
+        plt.figure()
+        #plt.plot(self.horVectorforce, posThetaVals)
+        #plt.plot(self.horVectorforce, negThetaVals)
+        plt.plot(self.horVectorforce, thetaVals)
+        plt.title("Bell Membership Function")
+        plt.xlabel("Force")
+        plt.ylabel("Membership")
+        plt.grid(True)
+        plt.show()
+
+
+
+
         
 
 def wrap_to_pi(angle):

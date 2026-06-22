@@ -1,6 +1,6 @@
 import numpy as np
 
-from controllers import wrap_to_pi
+from controllers import wrap_to_pi, MAX_FORCE
 
 print("Cart Pole Class Imported")
 
@@ -8,11 +8,10 @@ print("Cart Pole Class Imported")
 INITIAL_CART_X         = 0.0
 INITIAL_CART_X_VEL     = 0.0
 INITIAL_CART_X_ACC     = 0.0
-INITIAL_POLE_ANGLE     = np.pi / 4.0  # 30 degrees from vertical
+INITIAL_POLE_ANGLE     = 0.05#np.pi / 4.0  # 30 degrees from vertical
 INITIAL_POLE_ANGLE_VEL = 0.0
 INITIAL_POLE_ANGLE_ACC = 0.0
 MAX_CART_DISPLACEMENT  = 5.0  # meters
-MAX_FORCE              = 50.0 # Newtons
 
 # Physical parameters
 CART_MASS    = 1.0  # kg

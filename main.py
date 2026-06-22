@@ -10,13 +10,14 @@ if __name__ == "__main__":
     pygame.init()
 
     # Controllers
-    pidController = controllers.PIDController()
-    lqrController = controllers.LQRController()
+    pidController   = controllers.PIDController()
+    lqrController   = controllers.LQRController()
+    fuzzyController = controllers.fuzzyLogicController()
 
     # CartPoles
-    pidCartPole = cart_pole.CartPole(pidController)
-    lqrCartPole = cart_pole.CartPole(lqrController)
-    fuzzyCartPole = cart_pole.CartPole()
+    pidCartPole   = cart_pole.CartPole(pidController)
+    lqrCartPole   = cart_pole.CartPole(lqrController)
+    fuzzyCartPole = cart_pole.CartPole(fuzzyController)
     mpcCartPole = cart_pole.CartPole()
 
     # Canvas
@@ -82,15 +83,17 @@ if __name__ == "__main__":
         lqrCanvas.plot_angle_error(lqrCartPole.get_angle_error_history())
         lqrCanvas.plot_displacement_error(lqrCartPole.get_displacement_error_history())
 
-
-
+        # Fuzzy Controller
+        fuzzyCartPole.apply_controller(setPointSlider.get_set_point(), dt)
+        fuzzyCanvas.plot_angle_error(fuzzyCartPole.get_angle_error_history())
+        fuzzyCanvas.plot_displacement_error(fuzzyCartPole.get_displacement_error_history())
 
         # Reset simulations
         if RESET_BUTTON.was_button_pressed():
             setPointSlider.reset()  # Reset slider to initial position
             pidCartPole.reset()
             lqrCartPole.reset()
-            #lyapunovCartPole.reset()
+            fuzzyCartPole.reset()
             #mpcCartPole.reset()
 
             RESET_BUTTON.reset()  # Reset button state
