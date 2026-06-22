@@ -137,8 +137,8 @@ class fuzzyLogicController:
     def __init__(self):
 
         # To integrate bell membership functions
-        deltaInt = 0.1
-        samples  = int((2*MAX_FORCE)/deltaInt)
+        self.deltaInt = 0.1
+        samples  = int((2*MAX_FORCE) / self.deltaInt)
 
         self.horVectorforce = np.linspace(-MAX_FORCE, MAX_FORCE, samples)
 
@@ -208,7 +208,10 @@ class fuzzyLogicController:
         # Combined memberships
         thetaVals = np.maximum(negThetaVals, posThetaVals)
 
-        
+        # Force as x centroid coordinate
+        force = self.__hor_centroid(thetaVals)
+
+        print(force)
         
         
         import matplotlib.pyplot as plt
@@ -221,6 +224,14 @@ class fuzzyLogicController:
         plt.ylabel("Membership")
         plt.grid(True)
         plt.show()
+
+
+    def __hor_centroid(self, yVals):
+        totalArea = np.sum(yVals) * self.deltaInt
+        xtimesY   = self.horVectorforce * yVals
+        xCentroid = (1/totalArea) * np.sum(xtimesY) * self.deltaInt
+
+        return xCentroid
 
 
 
