@@ -136,8 +136,8 @@ class LQRController:
 class fuzzyLogicController:
     def __init__(self):
         # To integrate bell membership functions
-        self.deltaInt = 0.1
-        samples  = int((2*MAX_FORCE) / self.deltaInt)
+        deltaInt = 0.1
+        samples  = int((2*MAX_FORCE) / deltaInt)
 
         self.horVectorforce = np.linspace(-MAX_FORCE, MAX_FORCE, samples)
 
@@ -259,9 +259,9 @@ class fuzzyLogicController:
 
 
     def __hor_centroid(self, yVals):
-        totalArea = np.sum(yVals) * self.deltaInt
+        totalArea = np.sum(yVals)
         xtimesY   = self.horVectorforce * yVals
-        xCentroid = (1/totalArea) * np.sum(xtimesY) * self.deltaInt
+        xCentroid = (1/totalArea) * np.sum(xtimesY)
 
         return xCentroid
 
