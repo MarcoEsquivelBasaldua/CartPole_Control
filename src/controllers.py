@@ -3,7 +3,7 @@ from scipy.linalg import solve_continuous_are
 
 print("Cart Pole Controllers Imported")
 
-MAX_FORCE = 50.0 # Newtons
+MAX_FORCE = 80.0 # Newtons
 
 class PIDController:
     """
@@ -135,7 +135,6 @@ class LQRController:
 
 class fuzzyLogicController:
     def __init__(self):
-
         # To integrate bell membership functions
         self.deltaInt = 0.1
         samples  = int((2*MAX_FORCE) / self.deltaInt)
@@ -143,20 +142,26 @@ class fuzzyLogicController:
         self.horVectorforce = np.linspace(-MAX_FORCE, MAX_FORCE, samples)
 
         # Bell functions constants
-        self.thetaBellConsts = {'a': 5, 'b': 2, 'c': 20}
+        self.thetaBellConsts    = {'a': 20, 'b': 5, 'c': 50}
+        self.thetaDotBellConsts = {'a': 5, 'b': 2, 'c': 70}
+        self.xErrorBellConsts   = {'a': 5, 'b': 2, 'c': 10 }
+        self.xDotBellConsts     = {'a': 5, 'b': 2, 'c': 30}
 
     def compute_control(self, setpoint: float, currentState: np.ndarray, dt: float) -> float:
-        theta = currentState[1, 0]  # Pole angle
-        errorX = setpoint - currentState[0, 0] # Cart position error
+        xPos, theta, xPosDot, thetaDot  = currentState.flatten()
+        
+        errorX     = setpoint - xPos               # Cart position error
         errorTheta = angle_difference(0.0, theta)  # Pole angle error (desired angle is 0 for upright)
 
-        # Compute the degree of membership for the pole angle error
-        thetaMembership = self.__degree_of_membership(theta, scalling=10.0)
-        #print(f"Pole Angle Error: {errorTheta:.4f}, Positive Membership: {posThetaMembership:.4f}, Negative Membership: {negThetaMembership:.4f}")
+        # Compute the degree of membership every state entry
+        thetaMembership    = self.__degree_of_membership(theta   , scalling=10.0)
+        thetaDotMembership = self.__degree_of_membership(thetaDot, scalling=10.0)
+        xErrorMembership   = self.__degree_of_membership(errorX  , scalling=10.0)
+        xDotMembership     = self.__degree_of_membership(xPosDot , scalling=10.0)
 
-        self.__combined_force(thetaMembership)
+        force = self.__combined_force(thetaMembership, thetaDotMembership, xErrorMembership, xDotMembership)
 
-        return 0.0, errorTheta, errorX
+        return force, errorTheta, errorX
 
     def __degree_of_membership(self, signal:float, scalling = 1.0) -> tuple:
         """
@@ -172,11 +177,10 @@ class fuzzyLogicController:
 
         return positveMembership, negativeMembership
 
-    def __bell_membership_function(self, x, params, negative=False):
+    def __bell_membership_function(self, params, negative=False):
         """
         Bell-shaped membership function for fuzzy logic.
         Parameters:
-            x (float): The input value.
             params (dict): A dictionary containing the parameters of the bell curve, including 'a', 'b', and 'c'.
                 a (float): The width of the bell curve.
                 b (float): The slope of the bell curve.
@@ -185,45 +189,69 @@ class fuzzyLogicController:
         Returns:
             float: The membership value for the input x.
         """
+        x = self.horVectorforce
         a = params['a']
         b = params['b']
         c = params['c'] if not negative else -params['c']  # Center can be negative for negative error
 
         return 1 / (1 + abs((x - c) / a) ** (2 * b))
-    
-    def __combined_force(self, thetaDegs):
+
+    def __combined_force(self, thetaDegs, thetaDotDegs, xErrorDegs, xDotDegs):
 
         # Bell equiation functions
-        posThetaBell = self.__bell_membership_function(self.horVectorforce, self.thetaBellConsts)
-        negThetaBell = self.__bell_membership_function(self.horVectorforce, self.thetaBellConsts, negative=True)
+        posThetaBell    = self.__bell_membership_function(self.thetaBellConsts)
+        negThetaBell    = self.__bell_membership_function(self.thetaBellConsts, negative=True)
+        posThetaDotBell = self.__bell_membership_function(self.thetaDotBellConsts)
+        negThetaDotBell = self.__bell_membership_function(self.thetaDotBellConsts, negative=True)
+        posxErrorBell   = self.__bell_membership_function(self.xErrorBellConsts)
+        negxErrorBell   = self.__bell_membership_function(self.xErrorBellConsts, negative=True)
+        posxDotBell     = self.__bell_membership_function(self.xDotBellConsts)
+        negxDotBell     = self.__bell_membership_function(self.xDotBellConsts, negative=True)
 
         # Positive memberships
-        posThetaDeg = thetaDegs[0]
-        posThetaVals = np.minimum(posThetaBell, posThetaDeg)
+        posThetaVals    = np.minimum(posThetaBell, thetaDegs[0])
+        posThetaDotVals = np.minimum(posThetaDotBell, thetaDotDegs[0])
+        posxErrorVals   = np.minimum(posxErrorBell, xErrorDegs[0])
+        posxDotVals     = np.minimum(posxDotBell, xDotDegs[0])
 
         # Negative memberships
-        negThetaDeg = thetaDegs[1]
-        negThetaVals = np.minimum(negThetaBell, negThetaDeg)
+        negThetaVals    = np.minimum(negThetaBell, thetaDegs[1])
+        negThetaDotVals = np.minimum(negThetaDotBell, thetaDotDegs[1])
+        negxErrorVals   = np.minimum(negxErrorBell, xErrorDegs[1])
+        negxDotVals     = np.minimum(negxDotBell, xDotDegs[1])
 
         # Combined memberships
-        thetaVals = np.maximum(negThetaVals, posThetaVals)
+        thetaVals    = np.maximum(negThetaVals   , posThetaVals)
+        thetaDotVals = np.maximum(negThetaDotVals, posThetaDotVals)
+        xErrorVals   = np.maximum(negxErrorVals, posxErrorVals)
+        xDotVals     = np.maximum(negxDotVals, posxDotVals)
+
+        #combinedVals = np.maximum(thetaVals, np.maximum(thetaDotVals, np.maximum(xErrorVals, xDotVals)))
+
+        combinedVals = thetaVals
+        #combinedVals = np.maximum(thetaVals, np.maximum(thetaDotVals, xErrorVals))
+        #combinedVals = np.maximum(thetaVals, thetaDotVals)
+        #combinedVals = np.maximum(thetaVals,xErrorVals)
 
         # Force as x centroid coordinate
-        force = self.__hor_centroid(thetaVals)
-
+        force = self.__hor_centroid(combinedVals)
         print(force)
-        
+
+        return force
+
         
         import matplotlib.pyplot as plt
         plt.figure()
-        #plt.plot(self.horVectorforce, posThetaVals)
-        #plt.plot(self.horVectorforce, negThetaVals)
-        plt.plot(self.horVectorforce, thetaVals)
+        plt.plot(self.horVectorforce, negThetaBell)
+        plt.plot(self.horVectorforce, posThetaBell)
+        plt.plot(self.horVectorforce, combinedVals)
         plt.title("Bell Membership Function")
         plt.xlabel("Force")
         plt.ylabel("Membership")
         plt.grid(True)
         plt.show()
+
+        return force
 
 
     def __hor_centroid(self, yVals):
