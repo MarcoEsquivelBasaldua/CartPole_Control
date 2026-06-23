@@ -143,8 +143,8 @@ class fuzzyLogicController:
 
         # Bell functions constants
         self.thetaBellConsts    = {'a': 25, 'b': 5, 'c': 60}
-        self.thetaDotBellConsts = {'a': 8, 'b': 5, 'c': 80}
-        self.xErrorBellConsts   = {'a': 12, 'b': 5, 'c': 20 }
+        self.thetaDotBellConsts = {'a':  8, 'b': 5, 'c': 80}
+        self.xErrorBellConsts   = {'a': 12, 'b': 5, 'c': 20}
         self.xDotBellConsts     = {'a': 10, 'b': 5, 'c': 30}
 
         # Bell equiation functions
@@ -167,7 +167,7 @@ class fuzzyLogicController:
         errorTheta = angle_difference(0.0, theta)  # Pole angle error (desired angle is 0 for upright)
 
         # Compute the degree of membership every state entry
-        thetaMembership    = self.__degree_of_membership(theta   , scalling=50.0)
+        thetaMembership    = self.__degree_of_membership(theta   , scalling=50.0 )
         thetaDotMembership = self.__degree_of_membership(thetaDot, scalling=20.0 )
         xErrorMembership   = self.__degree_of_membership(errorX  , scalling=-20.0)
         xDotMembership     = self.__degree_of_membership(xPosDot , scalling=10.0 )
@@ -211,22 +211,22 @@ class fuzzyLogicController:
 
     def __combined_force(self, thetaDegs, thetaDotDegs, xErrorDegs, xDotDegs):
         # Positive memberships
-        posThetaVals    = np.minimum(self.posThetaBell, thetaDegs[0])
+        posThetaVals    = np.minimum(self.posThetaBell   , thetaDegs[0]   )
         posThetaDotVals = np.minimum(self.posThetaDotBell, thetaDotDegs[0])
-        posxErrorVals   = np.minimum(self.posxErrorBell, xErrorDegs[0])
-        posxDotVals     = np.minimum(self.posxDotBell, xDotDegs[0])
+        posxErrorVals   = np.minimum(self.posxErrorBell  , xErrorDegs[0]  )
+        posxDotVals     = np.minimum(self.posxDotBell    , xDotDegs[0]    )
 
         # Negative memberships
-        negThetaVals    = np.minimum(self.negThetaBell, thetaDegs[1])
+        negThetaVals    = np.minimum(self.negThetaBell   , thetaDegs[1]   )
         negThetaDotVals = np.minimum(self.negThetaDotBell, thetaDotDegs[1])
-        negxErrorVals   = np.minimum(self.negxErrorBell, xErrorDegs[1])
-        negxDotVals     = np.minimum(self.negxDotBell, xDotDegs[1])
+        negxErrorVals   = np.minimum(self.negxErrorBell  , xErrorDegs[1]  )
+        negxDotVals     = np.minimum(self.negxDotBell    , xDotDegs[1]    )
 
         # Combined memberships
-        thetaVals    = np.maximum(negThetaVals   , posThetaVals)
+        thetaVals    = np.maximum(negThetaVals   , posThetaVals   )
         thetaDotVals = np.maximum(negThetaDotVals, posThetaDotVals)
-        xErrorVals   = np.maximum(negxErrorVals, posxErrorVals)
-        xDotVals     = np.maximum(negxDotVals, posxDotVals)
+        xErrorVals   = np.maximum(negxErrorVals  , posxErrorVals  )
+        xDotVals     = np.maximum(negxDotVals    , posxDotVals    )
 
         combinedVals = np.maximum(thetaVals, np.maximum(thetaDotVals, np.maximum(xErrorVals, xDotVals)))
 
