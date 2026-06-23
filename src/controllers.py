@@ -147,6 +147,16 @@ class fuzzyLogicController:
         self.xErrorBellConsts   = {'a': 12, 'b': 5, 'c': 20 }
         self.xDotBellConsts     = {'a': 10, 'b': 5, 'c': 30}
 
+        # Bell equiation functions
+        self.posThetaBell    = self.__bell_membership_function(self.thetaBellConsts                  )
+        self.negThetaBell    = self.__bell_membership_function(self.thetaBellConsts   , negative=True)
+        self.posThetaDotBell = self.__bell_membership_function(self.thetaDotBellConsts               )
+        self.negThetaDotBell = self.__bell_membership_function(self.thetaDotBellConsts, negative=True)
+        self.posxErrorBell   = self.__bell_membership_function(self.xErrorBellConsts                 )
+        self.negxErrorBell   = self.__bell_membership_function(self.xErrorBellConsts  , negative=True)
+        self.posxDotBell     = self.__bell_membership_function(self.xDotBellConsts                   )
+        self.negxDotBell     = self.__bell_membership_function(self.xDotBellConsts    , negative=True)
+
     def reset(self):
         pass
 
@@ -200,28 +210,17 @@ class fuzzyLogicController:
         return 1 / (1 + abs((x - c) / a) ** (2 * b))
 
     def __combined_force(self, thetaDegs, thetaDotDegs, xErrorDegs, xDotDegs):
-
-        # Bell equiation functions
-        posThetaBell    = self.__bell_membership_function(self.thetaBellConsts)
-        negThetaBell    = self.__bell_membership_function(self.thetaBellConsts, negative=True)
-        posThetaDotBell = self.__bell_membership_function(self.thetaDotBellConsts)
-        negThetaDotBell = self.__bell_membership_function(self.thetaDotBellConsts, negative=True)
-        posxErrorBell   = self.__bell_membership_function(self.xErrorBellConsts)
-        negxErrorBell   = self.__bell_membership_function(self.xErrorBellConsts, negative=True)
-        posxDotBell     = self.__bell_membership_function(self.xDotBellConsts)
-        negxDotBell     = self.__bell_membership_function(self.xDotBellConsts, negative=True)
-
         # Positive memberships
-        posThetaVals    = np.minimum(posThetaBell, thetaDegs[0])
-        posThetaDotVals = np.minimum(posThetaDotBell, thetaDotDegs[0])
-        posxErrorVals   = np.minimum(posxErrorBell, xErrorDegs[0])
-        posxDotVals     = np.minimum(posxDotBell, xDotDegs[0])
+        posThetaVals    = np.minimum(self.posThetaBell, thetaDegs[0])
+        posThetaDotVals = np.minimum(self.posThetaDotBell, thetaDotDegs[0])
+        posxErrorVals   = np.minimum(self.posxErrorBell, xErrorDegs[0])
+        posxDotVals     = np.minimum(self.posxDotBell, xDotDegs[0])
 
         # Negative memberships
-        negThetaVals    = np.minimum(negThetaBell, thetaDegs[1])
-        negThetaDotVals = np.minimum(negThetaDotBell, thetaDotDegs[1])
-        negxErrorVals   = np.minimum(negxErrorBell, xErrorDegs[1])
-        negxDotVals     = np.minimum(negxDotBell, xDotDegs[1])
+        negThetaVals    = np.minimum(self.negThetaBell, thetaDegs[1])
+        negThetaDotVals = np.minimum(self.negThetaDotBell, thetaDotDegs[1])
+        negxErrorVals   = np.minimum(self.negxErrorBell, xErrorDegs[1])
+        negxDotVals     = np.minimum(self.negxDotBell, xDotDegs[1])
 
         # Combined memberships
         thetaVals    = np.maximum(negThetaVals   , posThetaVals)
