@@ -198,3 +198,4 @@ class CartPole:
         Returns the history of displacement errors as a list of tuples (time, displacement error).
         """
         return self.displacementErrorHistory
+    

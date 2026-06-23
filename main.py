@@ -18,14 +18,14 @@ if __name__ == "__main__":
     pidCartPole   = cart_pole.CartPole(pidController)
     lqrCartPole   = cart_pole.CartPole(lqrController)
     fuzzyCartPole = cart_pole.CartPole(fuzzyController)
-    mpcCartPole = cart_pole.CartPole()
+    mpcCartPole   = cart_pole.CartPole()
 
     # Canvas
-    screen    = pygame.display.set_mode((screen_tools.SCREEN_WIDTH, screen_tools.SCREEN_HEIGHT))
-    pidCanvas = screen_tools.Canvas(screen, screen_tools.PID_CANVAS_POS, pidCartPole)
-    lqrCanvas = screen_tools.Canvas(screen, screen_tools.LQR_CANVAS_POS, lqrCartPole)
+    screen      = pygame.display.set_mode((screen_tools.SCREEN_WIDTH, screen_tools.SCREEN_HEIGHT))
+    pidCanvas   = screen_tools.Canvas(screen, screen_tools.PID_CANVAS_POS  , pidCartPole  )
+    lqrCanvas   = screen_tools.Canvas(screen, screen_tools.LQR_CANVAS_POS  , lqrCartPole  )
     fuzzyCanvas = screen_tools.Canvas(screen, screen_tools.FUZZY_CANVAS_POS, fuzzyCartPole)
-    mpcCanvas = screen_tools.Canvas(screen, screen_tools.MPC_CANVAS_POS, mpcCartPole)
+    mpcCanvas   = screen_tools.Canvas(screen, screen_tools.MPC_CANVAS_POS  , mpcCartPole  )
 
     # Displays
     pygame.display.set_caption("Cart Pole Control")
@@ -34,9 +34,9 @@ if __name__ == "__main__":
     setPointSlider = screen_tools.SlideBar(screen)
 
     # Reset Button
-    BUTTON_WIDTH_SMALL = 100
+    BUTTON_WIDTH_SMALL  = 100
     BUTTON_HEIGHT_SMALL = 50
-    RESET_BUTTON = screen_tools.Button(120, 70, BUTTON_WIDTH_SMALL, BUTTON_HEIGHT_SMALL, 'RESET', screen)
+    RESET_BUTTON        = screen_tools.Button(120, 70, BUTTON_WIDTH_SMALL, BUTTON_HEIGHT_SMALL, 'RESET', screen)
 
     # Time control
     dt = 0.01  # Time step for the simulation
