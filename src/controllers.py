@@ -156,7 +156,7 @@ class fuzzyLogicController:
         # Compute the degree of membership every state entry
         thetaMembership    = self.__degree_of_membership(theta   , scalling=10.0)
         thetaDotMembership = self.__degree_of_membership(thetaDot, scalling=10.0)
-        xErrorMembership   = self.__degree_of_membership(errorX  , scalling=10.0)
+        xErrorMembership   = self.__degree_of_membership(errorX  , scalling=2.0)
         xDotMembership     = self.__degree_of_membership(xPosDot , scalling=10.0)
 
         force = self.__combined_force(thetaMembership, thetaDotMembership, xErrorMembership, xDotMembership)
@@ -229,6 +229,7 @@ class fuzzyLogicController:
         #combinedVals = np.maximum(thetaVals, np.maximum(thetaDotVals, np.maximum(xErrorVals, xDotVals)))
 
         combinedVals = thetaVals
+        combinedVals = np.maximum(thetaVals, xErrorVals)
         #combinedVals = np.maximum(thetaVals, np.maximum(thetaDotVals, xErrorVals))
         #combinedVals = np.maximum(thetaVals, thetaDotVals)
         #combinedVals = np.maximum(thetaVals,xErrorVals)
@@ -237,13 +238,13 @@ class fuzzyLogicController:
         force = self.__hor_centroid(combinedVals)
         print(force)
 
-        return force
+        #return force
 
         
         import matplotlib.pyplot as plt
         plt.figure()
-        plt.plot(self.horVectorforce, negThetaBell)
-        plt.plot(self.horVectorforce, posThetaBell)
+        plt.plot(self.horVectorforce, negxErrorBell)
+        plt.plot(self.horVectorforce, posxErrorBell)
         plt.plot(self.horVectorforce, combinedVals)
         plt.title("Bell Membership Function")
         plt.xlabel("Force")
