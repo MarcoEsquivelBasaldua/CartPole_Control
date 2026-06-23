@@ -143,12 +143,16 @@ class fuzzyLogicController:
 
         # Bell functions constants
         self.thetaBellConsts    = {'a': 20, 'b': 5, 'c': 50}
-        self.thetaDotBellConsts = {'a': 20, 'b': 5, 'c': 70}
-        self.xErrorBellConsts   = {'a': 5, 'b': 2, 'c': 5 }
+        self.thetaDotBellConsts = {'a': 10, 'b': 5, 'c': 70}
+        self.xErrorBellConsts   = {'a': 5, 'b': 2, 'c': 10 }
         self.xDotBellConsts     = {'a': 20, 'b': 5, 'c': 50}
+
+    def reset(self):
+        pass
 
     def compute_control(self, setpoint: float, currentState: np.ndarray, dt: float) -> float:
         xPos, theta, xPosDot, thetaDot  = currentState.flatten()
+        print(xPos)
         
         errorX     = setpoint - xPos               # Cart position error
         errorTheta = angle_difference(0.0, theta)  # Pole angle error (desired angle is 0 for upright)
@@ -229,22 +233,22 @@ class fuzzyLogicController:
         combinedVals = np.maximum(thetaVals, np.maximum(thetaDotVals, np.maximum(xErrorVals, xDotVals)))
 
         #combinedVals = thetaVals
-        combinedVals = np.maximum(thetaVals, xErrorVals)
-        #combinedVals = np.maximum(thetaVals, np.maximum(thetaDotVals, xErrorVals))
+        #combinedVals = np.maximum(thetaVals, xErrorVals)
+        combinedVals = np.maximum(thetaVals, np.maximum(thetaDotVals, xErrorVals))
         #combinedVals = np.maximum(thetaVals, thetaDotVals)
         #combinedVals = np.maximum(thetaVals,xErrorVals)
 
         # Force as x centroid coordinate
         force = self.__hor_centroid(combinedVals)
-        print(force)
+        #print(force)
 
         return force
 
         
         import matplotlib.pyplot as plt
         plt.figure()
-        plt.plot(self.horVectorforce, negxDotBell)
-        plt.plot(self.horVectorforce, posxDotBell)
+        plt.plot(self.horVectorforce, negThetaDotBell)
+        plt.plot(self.horVectorforce, posThetaDotBell)
         plt.plot(self.horVectorforce, combinedVals)
         plt.title("Bell Membership Function")
         plt.xlabel("Force")
