@@ -3,7 +3,7 @@ from scipy.linalg import solve_continuous_are
 
 print("Cart Pole Controllers Imported")
 
-MAX_FORCE = 80.0 # Newtons
+MAX_FORCE = 100.0 # Newtons
 
 class PIDController:
     """
@@ -142,26 +142,25 @@ class fuzzyLogicController:
         self.horVectorforce = np.linspace(-MAX_FORCE, MAX_FORCE, samples)
 
         # Bell functions constants
-        self.thetaBellConsts    = {'a': 20, 'b': 5, 'c': 50}
-        self.thetaDotBellConsts = {'a': 10, 'b': 5, 'c': 70}
-        self.xErrorBellConsts   = {'a': 5, 'b': 2, 'c': 10 }
-        self.xDotBellConsts     = {'a': 20, 'b': 5, 'c': 50}
+        self.thetaBellConsts    = {'a': 25, 'b': 5, 'c': 60}
+        self.thetaDotBellConsts = {'a': 8, 'b': 5, 'c': 80}
+        self.xErrorBellConsts   = {'a': 12, 'b': 5, 'c': 20 }
+        self.xDotBellConsts     = {'a': 10, 'b': 5, 'c': 30}
 
     def reset(self):
         pass
 
     def compute_control(self, setpoint: float, currentState: np.ndarray, dt: float) -> float:
         xPos, theta, xPosDot, thetaDot  = currentState.flatten()
-        print(xPos)
         
         errorX     = setpoint - xPos               # Cart position error
         errorTheta = angle_difference(0.0, theta)  # Pole angle error (desired angle is 0 for upright)
 
         # Compute the degree of membership every state entry
-        thetaMembership    = self.__degree_of_membership(theta   , scalling=10.0)
-        thetaDotMembership = self.__degree_of_membership(thetaDot, scalling=1.0)
-        xErrorMembership   = self.__degree_of_membership(errorX  , scalling=-2.0)
-        xDotMembership     = self.__degree_of_membership(xPosDot , scalling=10.0)
+        thetaMembership    = self.__degree_of_membership(theta   , scalling=50.0)
+        thetaDotMembership = self.__degree_of_membership(thetaDot, scalling=20.0 )
+        xErrorMembership   = self.__degree_of_membership(errorX  , scalling=-20.0)
+        xDotMembership     = self.__degree_of_membership(xPosDot , scalling=10.0 )
 
         force = self.__combined_force(thetaMembership, thetaDotMembership, xErrorMembership, xDotMembership)
 
@@ -234,13 +233,13 @@ class fuzzyLogicController:
 
         #combinedVals = thetaVals
         #combinedVals = np.maximum(thetaVals, xErrorVals)
-        combinedVals = np.maximum(thetaVals, np.maximum(thetaDotVals, xErrorVals))
+        #combinedVals = np.maximum(thetaVals, np.maximum(thetaDotVals, xErrorVals))
         #combinedVals = np.maximum(thetaVals, thetaDotVals)
         #combinedVals = np.maximum(thetaVals,xErrorVals)
 
         # Force as x centroid coordinate
         force = self.__hor_centroid(combinedVals)
-        #print(force)
+        print(force)
 
         return force
 
