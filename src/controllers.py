@@ -167,10 +167,10 @@ class fuzzyLogicController:
         errorTheta = angle_difference(0.0, theta)  # Pole angle error (desired angle is 0 for upright)
 
         # Compute the degree of membership every state entry
-        thetaMembership    = self.__degree_of_membership(theta   , scalling=50.0 )
-        thetaDotMembership = self.__degree_of_membership(thetaDot, scalling=20.0 )
-        xErrorMembership   = self.__degree_of_membership(errorX  , scalling=-20.0)
-        xDotMembership     = self.__degree_of_membership(xPosDot , scalling=10.0 )
+        thetaMembership    = self.__degree_of_membership(theta   , scalling=60.0 )
+        thetaDotMembership = self.__degree_of_membership(thetaDot, scalling=30.0 )
+        xErrorMembership   = self.__degree_of_membership(errorX  , scalling=-15.0)
+        xDotMembership     = self.__degree_of_membership(xPosDot , scalling=12.0 )
 
         force = self.__combined_force(thetaMembership, thetaDotMembership, xErrorMembership, xDotMembership)
 
