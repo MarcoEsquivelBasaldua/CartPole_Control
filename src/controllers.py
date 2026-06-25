@@ -3,6 +3,8 @@ from scipy.linalg import solve_continuous_are
 
 print("Cart Pole Controllers Imported")
 
+MAX_FORCE = 100.0 # Newtons
+
 class PIDController:
     """
     A PID controller for the Cart Pole system. It computes the control signal (force) based on the current state of the system and a desired setpoint.
@@ -129,6 +131,143 @@ class LQRController:
         Resets the internal state of the LQR controller if needed. For a standard LQR controller, there may not be any internal state to reset, but this method is included for consistency and future extensibility.
         """
         pass  # No internal state to reset for standard LQR, but this can be implemented if needed in the future
+
+
+class fuzzyLogicController:
+    def __init__(self):
+        # To integrate bell membership functions
+        deltaInt = 0.1
+        samples  = int((2*MAX_FORCE) / deltaInt)
+
+        self.horVectorforce = np.linspace(-MAX_FORCE, MAX_FORCE, samples)
+
+        # Bell functions constants
+        self.thetaBellConsts    = {'a': 25, 'b': 5, 'c': 60}
+        self.thetaDotBellConsts = {'a':  8, 'b': 5, 'c': 80}
+        self.xErrorBellConsts   = {'a': 12, 'b': 5, 'c': 20}
+        self.xDotBellConsts     = {'a': 10, 'b': 5, 'c': 30}
+
+        # Bell equiation functions
+        self.posThetaBell    = self.__bell_membership_function(self.thetaBellConsts                  )
+        self.negThetaBell    = self.__bell_membership_function(self.thetaBellConsts   , negative=True)
+        self.posThetaDotBell = self.__bell_membership_function(self.thetaDotBellConsts               )
+        self.negThetaDotBell = self.__bell_membership_function(self.thetaDotBellConsts, negative=True)
+        self.posxErrorBell   = self.__bell_membership_function(self.xErrorBellConsts                 )
+        self.negxErrorBell   = self.__bell_membership_function(self.xErrorBellConsts  , negative=True)
+        self.posxDotBell     = self.__bell_membership_function(self.xDotBellConsts                   )
+        self.negxDotBell     = self.__bell_membership_function(self.xDotBellConsts    , negative=True)
+
+    def reset(self):
+        pass
+
+    def compute_control(self, setpoint: float, currentState: np.ndarray, dt: float) -> float:
+        xPos, theta, xPosDot, thetaDot  = currentState.flatten()
+        
+        errorX     = setpoint - xPos               # Cart position error
+        errorTheta = angle_difference(0.0, theta)  # Pole angle error (desired angle is 0 for upright)
+
+        # Compute the degree of membership every state entry
+        thetaMembership    = self.__degree_of_membership(theta   , scalling=60.0 )
+        thetaDotMembership = self.__degree_of_membership(thetaDot, scalling=30.0 )
+        xErrorMembership   = self.__degree_of_membership(errorX  , scalling=-15.0)
+        xDotMembership     = self.__degree_of_membership(xPosDot , scalling=12.0 )
+
+        force = self.__combined_force(thetaMembership, thetaDotMembership, xErrorMembership, xDotMembership)
+
+        return force, errorTheta, errorX
+
+    def __degree_of_membership(self, signal:float, scalling = 1.0) -> tuple:
+        """
+        Computes the degree of membership for a given signal using a sigmoid function.
+        Parameters:
+            signal (float): The input signal for which to compute the membership.
+            scalling (float): A scaling factor to adjust the steepness of the sigmoid function.
+        Returns:
+            tuple: A tuple containing the positive and negative membership values.
+        """
+        positveMembership  = 1.0 / (1.0 + np.e**(-scalling * signal))
+        negativeMembership = 1.0 - positveMembership
+
+        return positveMembership, negativeMembership
+
+    def __bell_membership_function(self, params, negative=False):
+        """
+        Bell-shaped membership function for fuzzy logic.
+        Parameters:
+            params (dict): A dictionary containing the parameters of the bell curve, including 'a', 'b', and 'c'.
+                a (float): The width of the bell curve.
+                b (float): The slope of the bell curve.
+                c (float): The center of the bell curve.
+
+        Returns:
+            float: The membership value for the input x.
+        """
+        x = self.horVectorforce
+        a = params['a']
+        b = params['b']
+        c = params['c'] if not negative else -params['c']  # Center can be negative for negative error
+
+        return 1 / (1 + abs((x - c) / a) ** (2 * b))
+
+    def __combined_force(self, thetaDegs, thetaDotDegs, xErrorDegs, xDotDegs):
+        # Positive memberships
+        posThetaVals    = np.minimum(self.posThetaBell   , thetaDegs[0]   )
+        posThetaDotVals = np.minimum(self.posThetaDotBell, thetaDotDegs[0])
+        posxErrorVals   = np.minimum(self.posxErrorBell  , xErrorDegs[0]  )
+        posxDotVals     = np.minimum(self.posxDotBell    , xDotDegs[0]    )
+
+        # Negative memberships
+        negThetaVals    = np.minimum(self.negThetaBell   , thetaDegs[1]   )
+        negThetaDotVals = np.minimum(self.negThetaDotBell, thetaDotDegs[1])
+        negxErrorVals   = np.minimum(self.negxErrorBell  , xErrorDegs[1]  )
+        negxDotVals     = np.minimum(self.negxDotBell    , xDotDegs[1]    )
+
+        # Combined memberships
+        thetaVals    = np.maximum(negThetaVals   , posThetaVals   )
+        thetaDotVals = np.maximum(negThetaDotVals, posThetaDotVals)
+        xErrorVals   = np.maximum(negxErrorVals  , posxErrorVals  )
+        xDotVals     = np.maximum(negxDotVals    , posxDotVals    )
+
+        combinedVals = np.maximum(thetaVals, np.maximum(thetaDotVals, np.maximum(xErrorVals, xDotVals)))
+
+        #combinedVals = thetaVals
+        #combinedVals = np.maximum(thetaVals, xErrorVals)
+        #combinedVals = np.maximum(thetaVals, np.maximum(thetaDotVals, xErrorVals))
+        #combinedVals = np.maximum(thetaVals, thetaDotVals)
+        #combinedVals = np.maximum(thetaVals,xErrorVals)
+
+        # Force as x centroid coordinate
+        force = self.__hor_centroid(combinedVals)
+        print(force)
+
+        return force
+
+        
+        import matplotlib.pyplot as plt
+        plt.figure()
+        plt.plot(self.horVectorforce, negThetaDotBell)
+        plt.plot(self.horVectorforce, posThetaDotBell)
+        plt.plot(self.horVectorforce, combinedVals)
+        plt.title("Bell Membership Function")
+        plt.xlabel("Force")
+        plt.ylabel("Membership")
+        plt.grid(True)
+        plt.show()
+
+        return force
+
+
+    def __hor_centroid(self, yVals):
+        totalArea = np.sum(yVals)
+        xtimesY   = self.horVectorforce * yVals
+        xCentroid = (1/totalArea) * np.sum(xtimesY)
+
+        return xCentroid
+
+
+
+
+        
 
 def wrap_to_pi(angle):
     """
