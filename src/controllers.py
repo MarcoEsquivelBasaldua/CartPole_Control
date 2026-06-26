@@ -230,29 +230,8 @@ class fuzzyLogicController:
 
         combinedVals = np.maximum(thetaVals, np.maximum(thetaDotVals, np.maximum(xErrorVals, xDotVals)))
 
-        #combinedVals = thetaVals
-        #combinedVals = np.maximum(thetaVals, xErrorVals)
-        #combinedVals = np.maximum(thetaVals, np.maximum(thetaDotVals, xErrorVals))
-        #combinedVals = np.maximum(thetaVals, thetaDotVals)
-        #combinedVals = np.maximum(thetaVals,xErrorVals)
-
         # Force as x centroid coordinate
         force = self.__hor_centroid(combinedVals)
-        print(force)
-
-        return force
-
-        
-        import matplotlib.pyplot as plt
-        plt.figure()
-        plt.plot(self.horVectorforce, negThetaDotBell)
-        plt.plot(self.horVectorforce, posThetaDotBell)
-        plt.plot(self.horVectorforce, combinedVals)
-        plt.title("Bell Membership Function")
-        plt.xlabel("Force")
-        plt.ylabel("Membership")
-        plt.grid(True)
-        plt.show()
 
         return force
 
@@ -267,7 +246,6 @@ class fuzzyLogicController:
 
 
 
-        
 
 def wrap_to_pi(angle):
     """
