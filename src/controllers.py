@@ -244,6 +244,40 @@ class fuzzyLogicController:
         return xCentroid
 
 
+class mpcController:
+    def __init__(self):
+        self.predictionHorizon = 10
+        self.controlHorizon = 10
+
+        # Output mapping matrix C
+        self.C = np.array([[1.0, 0.0, 0.0, 0.0],
+                          [0.0, 1.0, 0.0, 0.0]])
+        
+    def reset(self):
+        pass
+
+    def compute_control(self, setpoint: float, currentState: np.ndarray, dt: float, A: np.ndarray, B: np.ndarray) -> float:
+        """Computes the control signal (force) based on the current state of the system and a desired setpoint using MPC control.
+        Parameters:
+            setpoint (float): The desired cart position.
+            currentState (np.ndarray): The current state of the system
+            dt (float): The time step for the simulation.
+            A (np.ndarray): The A matrix for the linearized system.
+            B (np.ndarray): The B matrix for the linearized system.
+
+        Returns:
+            float: The computed control signal (force) to be applied to the cart.
+        """
+        xPos, theta, xPosDot, thetaDot  = currentState.flatten()
+
+        errorX     = setpoint - xPos               # Cart position error
+        errorTheta = angle_difference(0.0, theta)  # Pole angle error (desired angle is 0 for upright)
+
+        
+
+        force = 0.0
+
+        return force, errorTheta, errorX
 
 
 
