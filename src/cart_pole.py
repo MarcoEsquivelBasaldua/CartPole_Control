@@ -22,7 +22,7 @@ WHEEL_RADIUS = 0.1  # meters
 POLE_LENGTH  = 1.0  # meters
 
 class CartPole:
-    def __init__(self, controller=None):
+    def __init__(self, controller=None, linearize=False):
         """
         Initializes the CartPole system with default parameters and initial conditions.
         """
@@ -49,8 +49,10 @@ class CartPole:
         self.M11 = self.cartMass + self.poleMass
         self.M22 = (2.0 * self.poleLength) / 3.0
 
-        # Linearize the system to get A and B matrices for LQR controller
-        self.A, self.B = self.linearize()
+        # Linearize the system
+        if linearize:
+            self.A, self.B = self.linearize()
+            self.controller.get_linear_system(self.A, self.B)
 
     def reset(self):
         """
@@ -86,7 +88,6 @@ class CartPole:
         """
         theta     = self.poleAngle
         theta_dot = self.poleAngledot
-        m_c       = self.cartMass
         m_p       = self.poleMass
         L         = self.poleLength
         g         = 9.81
@@ -112,13 +113,13 @@ class CartPole:
         B = np.array([[force],
                       [0.0]])
         
-        return M, M_inv, C, B
+        return M_inv, C, B
     
     def __update_state(self, force: float, dt: float):
         """
         Updates the state of the CartPole system based on the applied force and time step.
         """
-        M, M_inv, C, B = self.__equations_of_motion(force)
+        M_inv, C, B = self.__equations_of_motion(force)
 
         # Create the State space representation
         stateDot = M_inv @ (B - C)
@@ -133,15 +134,12 @@ class CartPole:
 
         #print(f"Cart X: {self.cartX:.2f}, Cart Xdot: {self.cartXdot:.2f}, Pole Angle: {np.degrees(self.poleAngle):.2f} degrees, Pole Angledot: {np.degrees(self.poleAngledot):.2f} degrees/s")
 
-    def apply_controller(self, set_point: float, dt: float, linearize=False):
+    def apply_controller(self, set_point: float, dt: float):
         """
         Applies the controller to compute the force based on the current state and set point, then updates the state.
         """
         if self.controller is not None:
-            if linearize:
-                force, errorTheta, errorX = self.controller.compute_control(set_point, self.get_current_state(), dt, self.A, self.B)
-            else:
-                force, errorTheta, errorX = self.controller.compute_control(set_point, self.get_current_state(), dt)
+            force, errorTheta, errorX = self.controller.compute_control(set_point, self.get_current_state(), dt)
 
             # Clip the force to the maximum allowed value
             force = np.clip(force, -MAX_FORCE, MAX_FORCE)
@@ -198,4 +196,3 @@ class CartPole:
         Returns the history of displacement errors as a list of tuples (time, displacement error).
         """
         return self.displacementErrorHistory
-    

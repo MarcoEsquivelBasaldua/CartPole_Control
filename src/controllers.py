@@ -83,14 +83,16 @@ class LQRController:
         self.Q_thetadot = 10.0
         self.R          = 1.0
 
-    def compute_control(self, setpoint: float, currentState: np.ndarray, dt: float, A: np.ndarray, B: np.ndarray) -> float:
+    def get_linear_system(self, A: np.ndarray, B: np.ndarray) -> None:
+        self.A = A
+        self.B = B
+
+    def compute_control(self, setpoint: float, currentState: np.ndarray, dt: float) -> float:
         """Computes the control signal (force) based on the current state of the system and a desired setpoint using LQR control.
         Parameters:
             setpoint (float): The desired cart position.
             currentState (np.ndarray): The current state of the system, where currentState[0, 0] is the cart position and currentState[1, 0] is the pole angle.
             dt (float): The time step for the simulation.
-            A (np.ndarray): The A matrix for the linearized system.
-            B (np.ndarray): The B matrix for the linearized system.
 
         Returns:
             float: The computed control signal (force) to be applied to the cart.
@@ -114,10 +116,10 @@ class LQRController:
         R = np.array([[self.R]])        # Control cost matrix
 
         # Solve the Continuous-time Algebraic Riccati Equation (CARE) to find the optimal state cost matrix P
-        P = solve_continuous_are(A, B, Q, R)
+        P = solve_continuous_are(self.A, self.B, Q, R)
 
         # Compute the LQR gain matrix K
-        K = np.linalg.inv(R) @ B.T @ P
+        K = np.linalg.inv(R) @ self.B.T @ P
 
         # Compute the control signal using the LQR gain
         controlSignal = -K @ x
@@ -256,14 +258,12 @@ class mpcController:
     def reset(self):
         pass
 
-    def compute_control(self, setpoint: float, currentState: np.ndarray, dt: float, A: np.ndarray, B: np.ndarray) -> float:
+    def compute_control(self, setpoint: float, currentState: np.ndarray, dt: float) -> float:
         """Computes the control signal (force) based on the current state of the system and a desired setpoint using MPC control.
         Parameters:
             setpoint (float): The desired cart position.
             currentState (np.ndarray): The current state of the system
             dt (float): The time step for the simulation.
-            A (np.ndarray): The A matrix for the linearized system.
-            B (np.ndarray): The B matrix for the linearized system.
 
         Returns:
             float: The computed control signal (force) to be applied to the cart.
