@@ -344,7 +344,9 @@ class mpcController:
         P  = 10.0 * np.eye(f)
         W4 = P
 
-        return M, W3, W4
+        self.M  = M
+        self.W3 = W3
+        self.W4 = W4
 
 
 
