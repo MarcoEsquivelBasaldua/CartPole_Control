@@ -248,8 +248,8 @@ class fuzzyLogicController:
 
 class mpcController:
     def __init__(self):
-        self.predictionHorizon = 15  # Prediction horizon f
-        self.controlHorizon    = 13  # Control horizon v
+        self.predictionHorizon = 5  # Prediction horizon f
+        self.controlHorizon    = 3  # Control horizon v
 
     def get_linear_system(self, A: np.ndarray, B: np.ndarray) -> None:
         self.A = A
@@ -299,11 +299,16 @@ class mpcController:
 
         # Precompute matrices multiplications
         M  = np.zeros((f*r, v*m))
+        O  = np.zeros((f*r, n*m))
+        
         CA = C
         
         for i in range(f):
             if i > 0:
                 CA = CA @ A
+                
+                # Fill O matrix
+                O[(i-1)*r:i*r] = CA
             CAB = CA @ B
 
             k = i
@@ -313,6 +318,9 @@ class mpcController:
 
                 if k == f:
                     break
+        
+        # Fill missing O matrix block
+        O[(f-1)*r:f*r] = CA @ A
 
         # Over write last M column
         if f > v:
@@ -324,7 +332,6 @@ class mpcController:
                 Apow = Apow @ A
 
                 CAB = (C @ Abar) @ B
-                print(r*i,r*(i+1))
 
                 M[r*i:r*(i+1), m*(v-1):m*v] = CAB
 
@@ -345,6 +352,7 @@ class mpcController:
         W4 = P
 
         self.M  = M
+        self.O  = O
         self.W3 = W3
         self.W4 = W4
 
