@@ -275,7 +275,21 @@ class mpcController:
         errorX     = setpoint - xPos               # Cart position error
         errorTheta = angle_difference(0.0, theta)  # Pole angle error (desired angle is 0 for upright)
 
-        
+        # Desired output
+        z = np.array([[setpoint],
+                      [0.0]])
+
+        # Extend Zd
+        r = self.r
+        m = self.m
+        f = self.predictionHorizon
+        zd = np.zeros((f*r, m))
+        for i in range(f):
+            zd[i*r:(i+1)*r] = z
+
+        # Vector s
+        s = zd - (self.O @ currentState)
+        print(s)
 
         force = 0.0
 
@@ -292,6 +306,9 @@ class mpcController:
         n = A.shape[0]
         r = C.shape[0]
         m = B.shape[1]
+
+        self.r = r
+        self.m = m
 
         # Prediction and Control horizons
         f = self.predictionHorizon
