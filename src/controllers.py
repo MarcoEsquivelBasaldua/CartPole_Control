@@ -83,14 +83,16 @@ class LQRController:
         self.Q_thetadot = 10.0
         self.R          = 1.0
 
-    def compute_control(self, setpoint: float, currentState: np.ndarray, dt: float, A: np.ndarray, B: np.ndarray) -> float:
+    def get_linear_system(self, A: np.ndarray, B: np.ndarray) -> None:
+        self.A = A
+        self.B = B
+
+    def compute_control(self, setpoint: float, currentState: np.ndarray, dt: float) -> float:
         """Computes the control signal (force) based on the current state of the system and a desired setpoint using LQR control.
         Parameters:
             setpoint (float): The desired cart position.
             currentState (np.ndarray): The current state of the system, where currentState[0, 0] is the cart position and currentState[1, 0] is the pole angle.
             dt (float): The time step for the simulation.
-            A (np.ndarray): The A matrix for the linearized system.
-            B (np.ndarray): The B matrix for the linearized system.
 
         Returns:
             float: The computed control signal (force) to be applied to the cart.
@@ -114,10 +116,10 @@ class LQRController:
         R = np.array([[self.R]])        # Control cost matrix
 
         # Solve the Continuous-time Algebraic Riccati Equation (CARE) to find the optimal state cost matrix P
-        P = solve_continuous_are(A, B, Q, R)
+        P = solve_continuous_are(self.A, self.B, Q, R)
 
         # Compute the LQR gain matrix K
-        K = np.linalg.inv(R) @ B.T @ P
+        K = np.linalg.inv(R) @ self.B.T @ P
 
         # Compute the control signal using the LQR gain
         controlSignal = -K @ x
@@ -230,29 +232,8 @@ class fuzzyLogicController:
 
         combinedVals = np.maximum(thetaVals, np.maximum(thetaDotVals, np.maximum(xErrorVals, xDotVals)))
 
-        #combinedVals = thetaVals
-        #combinedVals = np.maximum(thetaVals, xErrorVals)
-        #combinedVals = np.maximum(thetaVals, np.maximum(thetaDotVals, xErrorVals))
-        #combinedVals = np.maximum(thetaVals, thetaDotVals)
-        #combinedVals = np.maximum(thetaVals,xErrorVals)
-
         # Force as x centroid coordinate
         force = self.__hor_centroid(combinedVals)
-        print(force)
-
-        return force
-
-        
-        import matplotlib.pyplot as plt
-        plt.figure()
-        plt.plot(self.horVectorforce, negThetaDotBell)
-        plt.plot(self.horVectorforce, posThetaDotBell)
-        plt.plot(self.horVectorforce, combinedVals)
-        plt.title("Bell Membership Function")
-        plt.xlabel("Force")
-        plt.ylabel("Membership")
-        plt.grid(True)
-        plt.show()
 
         return force
 
@@ -265,9 +246,134 @@ class fuzzyLogicController:
         return xCentroid
 
 
+class mpcController:
+    def __init__(self):
+        self.predictionHorizon = 5  # Prediction horizon f
+        self.controlHorizon    = 3  # Control horizon v
 
-
+    def get_linear_system(self, A: np.ndarray, B: np.ndarray) -> None:
+        self.A = A
+        self.B = B
+        self.C = np.array([[1.0, 0.0, 0.0, 0.0],
+                          [0.0, 1.0, 0.0, 0.0]])
         
+    def reset(self):
+        pass
+
+    def compute_control(self, setpoint: float, currentState: np.ndarray, dt: float) -> float:
+        """Computes the control signal (force) based on the current state of the system and a desired setpoint using MPC control.
+        Parameters:
+            setpoint (float): The desired cart position.
+            currentState (np.ndarray): The current state of the system
+            dt (float): The time step for the simulation.
+
+        Returns:
+            float: The computed control signal (force) to be applied to the cart.
+        """
+        xPos, theta, xPosDot, thetaDot  = currentState.flatten()
+
+        errorX     = setpoint - xPos               # Cart position error
+        errorTheta = angle_difference(0.0, theta)  # Pole angle error (desired angle is 0 for upright)
+
+        # Desired output
+        z = np.array([[setpoint],
+                      [0.0]])
+
+        # Extend Zd
+        r = self.r
+        m = self.m
+        f = self.predictionHorizon
+        zd = np.zeros((f*r, m))
+        for i in range(f):
+            zd[i*r:(i+1)*r] = z
+
+        # Vector s
+        s = zd - (self.O @ currentState)
+        print(s)
+
+        force = 0.0
+
+        return force, errorTheta, errorX
+    
+    def compute_lifted_matrices(self):
+
+        # Linear system
+        A = self.A
+        B = self.B
+        C = self.C
+
+        # Matrices sizes
+        n = A.shape[0]
+        r = C.shape[0]
+        m = B.shape[1]
+
+        self.r = r
+        self.m = m
+
+        # Prediction and Control horizons
+        f = self.predictionHorizon
+        v = self.controlHorizon
+
+        # Precompute matrices multiplications
+        M  = np.zeros((f*r, v*m))
+        O  = np.zeros((f*r, n*m))
+        
+        CA = C
+        
+        for i in range(f):
+            if i > 0:
+                CA = CA @ A
+                
+                # Fill O matrix
+                O[(i-1)*r:i*r] = CA
+            CAB = CA @ B
+
+            k = i
+            for j in range(v):
+                M[r*k:r*(k+1), m*j:m*(j+1)] = CAB
+                k += 1
+
+                if k == f:
+                    break
+        
+        # Fill missing O matrix block
+        O[(f-1)*r:f*r] = CA @ A
+
+        # Over write last M column
+        if f > v:
+            Apow = A
+            Abar = np.eye(n)
+
+            for i in range(v, f):
+                Abar += Apow
+                Apow = Apow @ A
+
+                CAB = (C @ Abar) @ B
+
+                M[r*i:r*(i+1), m*(v-1):m*v] = CAB
+
+        # W1 matrix
+        W1 = np.eye(v)
+        for i in range(1, v):
+            W1[i, i-1] = -1.0
+
+        # Cost function matrix W2
+        Q  = 0.1 * np.eye(v)
+        W2 = Q
+
+        # Matrix W3
+        W3 = (W1.T @ W2) @ W1
+
+        # weight matrix W4
+        P  = 10.0 * np.eye(f)
+        W4 = P
+
+        self.M  = M
+        self.O  = O
+        self.W3 = W3
+        self.W4 = W4
+
+
 
 def wrap_to_pi(angle):
     """

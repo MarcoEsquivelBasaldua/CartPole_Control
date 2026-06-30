@@ -13,12 +13,14 @@ if __name__ == "__main__":
     pidController   = controllers.PIDController()
     lqrController   = controllers.LQRController()
     fuzzyController = controllers.fuzzyLogicController()
+    mpcController   = controllers.mpcController()
 
     # CartPoles
-    pidCartPole   = cart_pole.CartPole(pidController)
-    lqrCartPole   = cart_pole.CartPole(lqrController)
-    fuzzyCartPole = cart_pole.CartPole(fuzzyController)
-    mpcCartPole   = cart_pole.CartPole()
+    pidCartPole   = cart_pole.CartPole(pidController                )
+    lqrCartPole   = cart_pole.CartPole(lqrController, linearize=True)
+    fuzzyCartPole = cart_pole.CartPole(fuzzyController              )
+    mpcCartPole   = cart_pole.CartPole(mpcController, linearize=True)
+    mpcCartPole.controller.compute_lifted_matrices()
 
     # Canvas
     screen      = pygame.display.set_mode((screen_tools.SCREEN_WIDTH, screen_tools.SCREEN_HEIGHT))
@@ -79,7 +81,7 @@ if __name__ == "__main__":
         pidCanvas.plot_displacement_error(pidCartPole.get_displacement_error_history())
 
         # LQR Controller
-        lqrCartPole.apply_controller(setPointSlider.get_set_point(), dt, linearize=True)
+        lqrCartPole.apply_controller(setPointSlider.get_set_point(), dt)
         lqrCanvas.plot_angle_error(lqrCartPole.get_angle_error_history())
         lqrCanvas.plot_displacement_error(lqrCartPole.get_displacement_error_history())
 
@@ -88,13 +90,18 @@ if __name__ == "__main__":
         fuzzyCanvas.plot_angle_error(fuzzyCartPole.get_angle_error_history())
         fuzzyCanvas.plot_displacement_error(fuzzyCartPole.get_displacement_error_history())
 
+        # MPC Controller
+        mpcCartPole.apply_controller(setPointSlider.get_set_point(), dt)
+        mpcCanvas.plot_angle_error(mpcCartPole.get_angle_error_history())
+        mpcCanvas.plot_displacement_error(mpcCartPole.get_displacement_error_history())
+
         # Reset simulations
         if RESET_BUTTON.was_button_pressed():
             setPointSlider.reset()  # Reset slider to initial position
             pidCartPole.reset()
             lqrCartPole.reset()
             fuzzyCartPole.reset()
-            #mpcCartPole.reset()
+            mpcCartPole.reset()
 
             RESET_BUTTON.reset()  # Reset button state
 
@@ -105,6 +112,6 @@ if __name__ == "__main__":
 
         wasMousePresed = False
         pygame.display.flip()    # Update the display
-        pygame.time.delay(10)   # Delay to control frame rate
+        pygame.time.delay(1)   # Delay to control frame rate
 
     pygame.quit()
