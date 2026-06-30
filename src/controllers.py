@@ -308,7 +308,6 @@ class mpcController:
 
             k = i
             for j in range(v):
-                #print(k, j)
                 M[r*k:r*(k+1), m*j:m*(j+1)] = CAB
                 k += 1
 
@@ -334,15 +333,18 @@ class mpcController:
         for i in range(1, v):
             W1[i, i-1] = -1.0
 
-        
+        # Cost function matrix W2
+        Q  = 0.1 * np.eye(v)
+        W2 = Q
 
+        # Matrix W3
+        W3 = (W1.T @ W2) @ W1
 
-        #print(A)
-        #print(B)
-        #print(C)
-        #print(CAB)
-        #print(M)
-        print(W1)
+        # weight matrix W4
+        P  = 10.0 * np.eye(f)
+        W4 = P
+
+        return M, W3, W4
 
 
 
