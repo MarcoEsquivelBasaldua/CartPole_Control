@@ -16,10 +16,11 @@ if __name__ == "__main__":
     mpcController   = controllers.mpcController()
 
     # CartPoles
-    pidCartPole   = cart_pole.CartPole(pidController)
+    pidCartPole   = cart_pole.CartPole(pidController                )
     lqrCartPole   = cart_pole.CartPole(lqrController, linearize=True)
-    fuzzyCartPole = cart_pole.CartPole(fuzzyController)
-    mpcCartPole   = cart_pole.CartPole(mpcController)
+    fuzzyCartPole = cart_pole.CartPole(fuzzyController              )
+    mpcCartPole   = cart_pole.CartPole(mpcController, linearize=True)
+    mpcCartPole.controller.compute_lifted_matrices()
 
     # Canvas
     screen      = pygame.display.set_mode((screen_tools.SCREEN_WIDTH, screen_tools.SCREEN_HEIGHT))

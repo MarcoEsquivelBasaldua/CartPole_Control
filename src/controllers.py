@@ -248,10 +248,12 @@ class fuzzyLogicController:
 
 class mpcController:
     def __init__(self):
-        self.predictionHorizon = 10
-        self.controlHorizon = 10
+        self.predictionHorizon = 15  # Prediction horizon f
+        self.controlHorizon    = 13  # Control horizon v
 
-        # Output mapping matrix C
+    def get_linear_system(self, A: np.ndarray, B: np.ndarray) -> None:
+        self.A = A
+        self.B = B
         self.C = np.array([[1.0, 0.0, 0.0, 0.0],
                           [0.0, 1.0, 0.0, 0.0]])
         
@@ -278,6 +280,69 @@ class mpcController:
         force = 0.0
 
         return force, errorTheta, errorX
+    
+    def compute_lifted_matrices(self):
+
+        # Linear system
+        A = self.A
+        B = self.B
+        C = self.C
+
+        # Matrices sizes
+        n = A.shape[0]
+        r = C.shape[0]
+        m = B.shape[1]
+
+        # Prediction and Control horizons
+        f = self.predictionHorizon
+        v = self.controlHorizon
+
+        # Precompute matrices multiplications
+        M  = np.zeros((f*r, v*m))
+        CA = C
+        
+        for i in range(f):
+            if i > 0:
+                CA = CA @ A
+            CAB = CA @ B
+
+            k = i
+            for j in range(v):
+                #print(k, j)
+                M[r*k:r*(k+1), m*j:m*(j+1)] = CAB
+                k += 1
+
+                if k == f:
+                    break
+
+        # Over write last M column
+        if f > v:
+            Apow = A
+            Abar = np.eye(n)
+
+            for i in range(v, f):
+                Abar += Apow
+                Apow = Apow @ A
+
+                CAB = (C @ Abar) @ B
+                print(r*i,r*(i+1))
+
+                M[r*i:r*(i+1), m*(v-1):m*v] = CAB
+
+        # W1 matrix
+        W1 = np.eye(v)
+        for i in range(1, v):
+            W1[i, i-1] = -1.0
+
+        
+
+
+        #print(A)
+        #print(B)
+        #print(C)
+        #print(CAB)
+        #print(M)
+        print(W1)
 
 
 
